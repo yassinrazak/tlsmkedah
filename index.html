@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TLSM Kedah | Diagnostic Evaluation System</title>
+  <title>TLSM Kedah Evaluation Portal</title>
   <style>
     :root {
       --primary: #6366f1;
@@ -11,6 +11,7 @@
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
       --glass-bg: rgba(255, 255, 255, 0.97);
       --card-bg: #ffffff;
+      --card-border: #f1f5f9;
       --text-dark: #0f172a;
     }
 
@@ -23,25 +24,20 @@
       color: var(--text-dark);
       box-sizing: border-box;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
     }
 
     .container {
-      max-width: 960px;
+      max-width: 480px;
       width: 100%;
       background: var(--glass-bg);
       margin: 0 auto;
-      padding: 25px 25px 15px 25px;
+      padding: 30px 25px 20px 25px;
       border-radius: 20px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
       backdrop-filter: blur(16px);
-      box-sizing: border-box;
-    }
-
-    .auth-container {
-      max-width: 400px;
-      margin: 10px auto;
+      text-align: center;
     }
 
     h2 {
@@ -56,351 +52,122 @@
     p.subtitle {
       text-align: center;
       color: #64748b;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 14px;
       font-weight: 500;
     }
 
-    /* Views Switcher */
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    .toggle-link {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 13px;
-      color: #64748b;
+    .main-logo {
+      height: 70px;
+      width: auto;
+      margin-bottom: 15px;
+      object-fit: contain;
     }
 
-    .toggle-link a {
-      color: var(--primary);
-      font-weight: 700;
+    .launch-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
       text-decoration: none;
-      cursor: pointer;
-    }
-
-    .toggle-link a:hover { text-decoration: underline; }
-
-    /* Form Fields */
-    .form-group { margin-bottom: 14px; }
-
-    label {
-      font-weight: 700;
-      color: #334155;
-      display: block;
-      margin-bottom: 5px;
-      font-size: 13px;
-    }
-
-    input[type="text"], input[type="email"], input[type="password"], select {
-      width: 100%;
-      padding: 9px 12px;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 14px;
-      background: #ffffff;
-      color: #1e293b;
-      outline: none;
-      box-sizing: border-box;
-      transition: all 0.2s ease;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-    }
-
-    /* Sticky User Status Banner */
-    .user-banner {
-      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-      padding: 10px 16px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .user-info { font-weight: 700; color: #3730a3; font-size: 13px; }
-
-    .logout-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 12px;
-      transition: background 0.2s ease;
-    }
-
-    .logout-btn:hover { background: #dc2626; }
-
-    /* Controls Bar */
-    .controls-grid {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 12px;
-      margin-bottom: 15px;
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-    }
-
-    @media (max-width: 600px) {
-      .controls-grid { grid-template-columns: 1fr; }
-    }
-
-    /* 4 Column Questions Layout */
-    .vertical-columns-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    @media (max-width: 900px) { .vertical-columns-container { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .vertical-columns-container { grid-template-columns: 1fr; } }
-
-    .column-stream { display: flex; flex-direction: column; gap: 6px; }
-
-    .column-header-badge {
-      text-align: center;
-      background: #e0e7ff;
-      color: #3730a3;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 11px;
-      margin-bottom: 2px;
-    }
-
-    .q-card {
-      background: var(--card-bg);
-      border: 1px solid #e2e8f0;
-      padding: 5px 7px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .q-num-label { font-weight: 800; color: #475569; font-size: 12px; min-width: 28px; }
-
-    .pill-group { display: flex; gap: 3px; flex: 1; }
-
-    .pill-btn { flex: 1; text-align: center; position: relative; }
-    .pill-btn input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-    .pill-btn span {
-      display: block;
-      padding: 4px 0;
-      background: #f1f5f9;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.15s ease;
-    }
-
-    .pill-btn:hover span { background: #e2e8f0; color: #334155; }
-
-    .pill-btn input[type="radio"]:checked + span {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 2px 5px rgba(99, 102, 241, 0.3);
-    }
-
-    .submit-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-      border: none;
-      padding: 13px;
+      padding: 14px 0;
       font-size: 15px;
       font-weight: 800;
       border-radius: 10px;
-      cursor: pointer;
-      margin-top: 18px;
-      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
       transition: all 0.2s ease;
+      box-sizing: border-box;
     }
 
-    .submit-btn:hover {
+    .launch-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.35);
     }
 
-    #resultCard {
-      display: none;
-      margin-top: 18px;
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .PASS { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
-    .FAIL { background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
-
-    /* Compact Side Footer */
+    /* COMPACT SIDE FOOTER (Matching Apps Script) */
     .footer-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 18px;
-      padding-top: 10px;
+      margin-top: 25px;
+      padding-top: 12px;
       border-top: 1px solid #e2e8f0;
       gap: 12px;
     }
 
-    .footer-logos-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .footer-logo { max-height: 36px; width: auto; object-fit: contain; }
-    .footer-divider { height: 24px; width: 1px; background-color: #cbd5e1; }
-    .footer-text { text-align: right; font-size: 11px; color: #94a3b8; line-height: 1.3; white-space: nowrap; }
+    .footer-logos-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-    @media (max-width: 600px) {
-      .footer-container { flex-direction: column; text-align: center; gap: 8px; }
-      .footer-logos-group { justify-content: center; }
-      .footer-text { text-align: center; white-space: normal; }
-      .footer-divider { display: none; }
+    .footer-logo {
+      max-height: 36px;
+      width: auto;
+      object-fit: contain;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .footer-logo:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .footer-divider {
+      height: 24px;
+      width: 1px;
+      background-color: #cbd5e1;
+    }
+
+    .footer-text {
+      text-align: right;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 480px) {
+      .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+      }
+
+      .footer-logos-group {
+        justify-content: center;
+      }
+
+      .footer-text {
+        text-align: center;
+        white-space: normal;
+      }
+
+      .footer-divider {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <!-- PRIMARY LOGO -->
+  <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="main-logo">
+  
   <h2>TRAUMA LIFE SUPPORT EVALUATION</h2>
   <p class="subtitle">TLSM – Kedah Diagnostic Grading System</p>
 
-  <!-- VIEW 1: REGISTRATION -->
-  <div id="regView" class="view-section active">
-    <div class="auth-container">
-      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">New User Registration</h3>
-      <form id="regForm">
-        <div class="form-group">
-          <label for="regName">FULL NAME</label>
-          <input type="text" id="regName" placeholder="e.g. Dr. Abc" required>
-        </div>
-        <div class="form-group">
-          <label for="regUsername">USERNAME</label>
-          <input type="text" id="regUsername" placeholder="e.g. abc123" required>
-        </div>
-        <div class="form-group">
-          <label for="regPassword">SET PASSWORD</label>
-          <input type="password" id="regPassword" placeholder="Enter password" required>
-        </div>
-        <div class="form-group">
-          <label for="regMykad">MYKAD NUMBER</label>
-          <input type="text" id="regMykad" placeholder="e.g. 900101025555" required>
-        </div>
-        <div class="form-group">
-          <label for="regEmail">EMAIL ADDRESS</label>
-          <input type="email" id="regEmail" placeholder="e.g. abc123@example.com" required>
-        </div>
-
-        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="registerUser()">REGISTER ACCOUNT</button>
-      </form>
-      <div class="toggle-link">
-        Already registered user? <a onclick="showView('loginView')">Log In Here</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- VIEW 2: LOGIN -->
-  <div id="loginView" class="view-section">
-    <div class="auth-container">
-      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">User Login</h3>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginUsername">USERNAME</label>
-          <input type="text" id="loginUsername" placeholder="e.g. abc123" required>
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">PASSWORD</label>
-          <input type="password" id="loginPassword" placeholder="Enter password" required>
-        </div>
-
-        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="loginUser()">LOG IN</button>
-      </form>
-      <div class="toggle-link"><a onclick="showView('forgotView')">Forgot Password?</a></div>
-      <div class="toggle-link">Need to register first? <a onclick="showView('regView')">Register Here</a></div>
-    </div>
-  </div>
-
-  <!-- VIEW 3: FORGOT PASSWORD -->
-  <div id="forgotView" class="view-section">
-    <div class="auth-container">
-      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Forgot Password</h3>
-      <p style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 16px;">
-        Enter your registered email address below, and we will send your password to your inbox.
-      </p>
-      <form id="forgotForm">
-        <div class="form-group">
-          <label for="forgotEmail">REGISTERED EMAIL ADDRESS</label>
-          <input type="email" id="forgotEmail" placeholder="e.g. abc123@example.com" required>
-        </div>
-        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="sendPasswordEmail()">SEND PASSWORD TO EMAIL</button>
-      </form>
-      <div class="toggle-link">Back to <a onclick="showView('loginView')">Log In</a></div>
-    </div>
-  </div>
-
-  <!-- VIEW 4: MCQ EXAM ANSWER SHEET -->
-  <div id="examView" class="view-section">
-    <div class="user-banner">
-      <div class="user-info">Logged in as User: <span id="displayUsername" style="color: #1e1b4b;">-</span></div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-
-    <form id="mcqForm">
-      <div class="controls-grid">
-        <div class="form-group" style="margin:0;">
-          <label for="setSelect">QUESTION SET:</label>
-          <select id="setSelect" onchange="saveSetPreference()" required>
-            <option value="Set A">Set A</option>
-            <option value="Set B" selected>Set B</option>
-            <option value="Set C">Set C</option>
-            <option value="Set D">Set D</option>
-            <option value="Set E">Set E</option>
-            <option value="Set F">Set F</option>
-          </select>
-        </div>
-
-        <div class="form-group" style="margin:0;">
-          <label for="participantSelect">SELECT PARTICIPANT NAME:</label>
-          <select id="participantSelect" required>
-            <option value="">-- Choose Participant --</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="vertical-columns-container">
-        <div class="column-stream"><div class="column-header-badge">Q1 – Q13</div><div id="colStream1"></div></div>
-        <div class="column-stream"><div class="column-header-badge">Q14 – Q25</div><div id="colStream2"></div></div>
-        <div class="column-stream"><div class="column-header-badge">Q26 – Q38</div><div id="colStream3"></div></div>
-        <div class="column-stream"><div class="column-header-badge">Q39 – Q50</div><div id="colStream4"></div></div>
-      </div>
-
-      <button type="button" class="submit-btn" onclick="submitExam()">SUBMIT & AUTO GRADE</button>
-    </form>
-    <div id="resultCard"></div>
-  </div>
+  <!-- LAUNCH BUTTON -->
+  <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec" class="launch-btn">LAUNCH SYSTEM 🚀</a>
 
   <!-- COMPACT SIDE FOOTER -->
   <footer class="footer-container">
     <div class="footer-logos-group">
       <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="footer-logo">
       <div class="footer-divider"></div>
-      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" alt="Organization Logo" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" alt="Affiliate / Organization Logo" class="footer-logo">
       <img src="https://lh3.googleusercontent.com/d/1TiqQcTeY3kTAYYs5visup6_qPC5vu7c4" alt="Partner Logo" class="footer-logo">
     </div>
 
@@ -410,220 +177,6 @@
     </div>
   </footer>
 </div>
-
-<script>
-  // 🔑 YOUR DEPLOYED APPS SCRIPT WEB APP BACKEND URL
-  const API_URL = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
-
-  var currentUser = { username: "", fullName: "" };
-
-  // 🌐 JSONP Engine: Completely Bypasses CORS Blocking
-  function jsonpRequest(action, payload) {
-    return new Promise((resolve, reject) => {
-      const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
-      
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-        resolve(data);
-      };
-
-      const script = document.createElement('script');
-      const encodedPayload = encodeURIComponent(JSON.stringify(payload || {}));
-      script.src = `${API_URL}?action=${action}&payload=${encodedPayload}&callback=${callbackName}`;
-      
-      script.onerror = function() {
-        delete window[callbackName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-        reject(new Error("JSONP Request Failed"));
-      };
-
-      document.body.appendChild(script);
-    });
-  }
-
-  function apiPost(action, payload) {
-    return jsonpRequest(action, payload)
-      .catch(err => {
-        alert("Connection Error: Unable to reach Google Database.");
-        console.error("API Error:", err);
-      });
-  }
-
-  function loadParticipantsDropdown() {
-    jsonpRequest('getParticipants', {})
-      .then(res => {
-        if (res && res.success) {
-          var select = document.getElementById('participantSelect');
-          select.innerHTML = '<option value="">-- Choose Participant --</option>';
-          res.participants.forEach(p => {
-            var opt = document.createElement('option');
-            opt.value = p.fullName;
-            opt.textContent = p.fullName;
-            select.appendChild(opt);
-          });
-        }
-      })
-      .catch(err => console.error("Participant fetch error:", err));
-  }
-
-  function registerUser() {
-    var payload = {
-      name: document.getElementById('regName').value,
-      username: document.getElementById('regUsername').value,
-      password: document.getElementById('regPassword').value,
-      mykad: document.getElementById('regMykad').value,
-      email: document.getElementById('regEmail').value
-    };
-
-    if (!payload.name || !payload.username || !payload.password || !payload.mykad || !payload.email) {
-      alert("Please fill in all registration fields!");
-      return;
-    }
-
-    apiPost("register", payload).then(res => {
-      if (!res) return;
-      alert(res.message);
-      if (res.success) {
-        currentUser.username = res.username;
-        currentUser.fullName = res.fullName;
-        document.getElementById('displayUsername').textContent = currentUser.username;
-        document.getElementById('regForm').reset();
-        loadParticipantsDropdown();
-        showView('examView');
-      }
-    });
-  }
-
-  function loginUser() {
-    var u = document.getElementById('loginUsername').value;
-    var p = document.getElementById('loginPassword').value;
-
-    if (!u || !p) {
-      alert("Please enter both username and password!");
-      return;
-    }
-
-    apiPost("login", { username: u, password: p }).then(res => {
-      if (!res) return;
-      if (res.success) {
-        currentUser.username = res.username;
-        currentUser.fullName = res.fullName;
-        document.getElementById('displayUsername').textContent = currentUser.username;
-        document.getElementById('loginForm').reset();
-        loadParticipantsDropdown();
-        showView('examView');
-      } else {
-        alert(res.message);
-      }
-    });
-  }
-
-  function sendPasswordEmail() {
-    var email = document.getElementById('forgotEmail').value;
-    if (!email) {
-      alert("Please enter your registered email address!");
-      return;
-    }
-
-    apiPost("recoverPassword", { email: email }).then(res => {
-      if (!res) return;
-      alert(res.message);
-      if (res.success) {
-        document.getElementById('forgotForm').reset();
-        showView('loginView');
-      }
-    });
-  }
-
-  function logout() {
-    currentUser = { username: "", fullName: "" };
-    document.getElementById('resultCard').style.display = 'none';
-    document.getElementById('mcqForm').reset();
-    showView('loginView');
-  }
-
-  function submitExam() {
-    var questionSet = document.getElementById('setSelect').value;
-    var participantName = document.getElementById('participantSelect').value;
-
-    if (!participantName) {
-      alert("Please select a Participant Name from the list!");
-      return;
-    }
-
-    saveSetPreference();
-
-    var answers = {};
-    for (var i = 1; i <= 50; i++) {
-      var sel = document.querySelector(`input[name="ans_q${i}"]:checked`);
-      if (!sel) {
-        alert(`Please select an answer for Question ${i}`);
-        return;
-      }
-      answers[`q${i}`] = sel.value;
-    }
-
-    apiPost("submitExam", {
-      questionSet: questionSet,
-      participantName: participantName,
-      evaluatorUsername: currentUser.username,
-      answers: answers
-    }).then(res => {
-      if (!res) return;
-      var card = document.getElementById('resultCard');
-      card.className = res.status;
-      card.style.display = 'block';
-      card.innerHTML = `
-        <h2 style="margin:0 0 8px 0; color: inherit;">RESULT (${res.set}): ${res.score} / ${res.total} (${res.percentage}%)</h2>
-        <p style="margin: 0; font-weight: 600;">Participant: ${res.participant} | Status: ${res.status}</p>
-        <p style="font-size: 12px; margin-top: 4px; opacity: 0.8;">(Saved to Google Sheet)</p>
-      `;
-      document.getElementById('mcqForm').reset();
-      loadSetPreference();
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    });
-  }
-
-  function loadSetPreference() {
-    var savedSet = localStorage.getItem('tlsm_selected_set');
-    if (savedSet) { document.getElementById('setSelect').value = savedSet; }
-  }
-
-  function saveSetPreference() {
-    var currentSet = document.getElementById('setSelect').value;
-    localStorage.setItem('tlsm_selected_set', currentSet);
-  }
-
-  function showView(viewId) {
-    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
-    if (viewId === 'examView') { loadSetPreference(); }
-  }
-
-  function createQuestionCard(num) {
-    var card = document.createElement('div');
-    card.className = 'q-card';
-    var optionsHtml = ['A', 'B', 'C', 'D', 'E'].map(opt => `
-      <label class="pill-btn">
-        <input type="radio" name="ans_q${num}" value="${opt}">
-        <span>${opt}</span>
-      </label>
-    `).join('');
-    card.innerHTML = `<div class="q-num-label">Q${num}</div><div class="pill-group">${optionsHtml}</div>`;
-    return card;
-  }
-
-  const col1 = document.getElementById('colStream1');
-  const col2 = document.getElementById('colStream2');
-  const col3 = document.getElementById('colStream3');
-  const col4 = document.getElementById('colStream4');
-
-  for (let i = 1; i <= 13; i++) { col1.appendChild(createQuestionCard(i)); }
-  for (let i = 14; i <= 25; i++) { col2.appendChild(createQuestionCard(i)); }
-  for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
-  for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
-</script>
 
 </body>
 </html>
