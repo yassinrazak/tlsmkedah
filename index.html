@@ -456,22 +456,21 @@
   for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
   for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
 
-// 🌐 Updated API Post Helper (Avoids CORS Preflight Blocking)
-function apiPost(action, payload) {
-  var formData = new URLSearchParams();
-  formData.append("action", action);
-  formData.append("payload", JSON.stringify(payload));
+  // 🌐 CORS-Safe GET API Handler
+  function apiPost(action, payload) {
+    var url = API_URL + "?action=" + encodeURIComponent(action) + "&payload=" + encodeURIComponent(JSON.stringify(payload));
 
-  return fetch(API_URL, {
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.json())
-  .catch(err => {
-    alert("Connection Error: " + err.message);
-    console.error("API Call Error:", err);
-  });
-}
+    return fetch(url, {
+      method: "GET",
+      mode: "cors",
+      redirect: "follow"
+    })
+    .then(res => res.json())
+    .catch(err => {
+      alert("Connection Error: " + err.message);
+      console.error("API Call Error:", err);
+    });
+  }
 
   function registerUser() {
     var payload = {
@@ -543,7 +542,7 @@ function apiPost(action, payload) {
   }
 
   function loadParticipantsDropdown() {
-    fetch(`${API_URL}?action=getParticipants`)
+    fetch(`${API_URL}?action=getParticipants`, { mode: "cors", redirect: "follow" })
       .then(res => res.json())
       .then(res => {
         if (res && res.success) {
@@ -556,7 +555,8 @@ function apiPost(action, payload) {
             select.appendChild(opt);
           });
         }
-      });
+      })
+      .catch(err => console.error("Failed to load participants:", err));
   }
 
   function logout() {
