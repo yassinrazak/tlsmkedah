@@ -61,6 +61,7 @@
       font-weight: 500;
     }
 
+    /* Views Switcher */
     .view-section { display: none; }
     .view-section.active { display: block; }
 
@@ -80,6 +81,7 @@
 
     .toggle-link a:hover { text-decoration: underline; }
 
+    /* Form Fields */
     .form-group { margin-bottom: 14px; }
 
     label {
@@ -100,6 +102,7 @@
       color: #1e293b;
       outline: none;
       box-sizing: border-box;
+      transition: all 0.2s ease;
     }
 
     input:focus, select:focus {
@@ -107,6 +110,7 @@
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
     }
 
+    /* Sticky User Status Banner */
     .user-banner {
       background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
       padding: 10px 16px;
@@ -128,8 +132,12 @@
       font-weight: 700;
       cursor: pointer;
       font-size: 12px;
+      transition: background 0.2s ease;
     }
 
+    .logout-btn:hover { background: #dc2626; }
+
+    /* Controls Bar */
     .controls-grid {
       display: grid;
       grid-template-columns: 1fr 2fr;
@@ -145,6 +153,7 @@
       .controls-grid { grid-template-columns: 1fr; }
     }
 
+    /* 4 Column Questions Layout */
     .vertical-columns-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -194,11 +203,15 @@
       color: #64748b;
       cursor: pointer;
       user-select: none;
+      transition: all 0.15s ease;
     }
+
+    .pill-btn:hover span { background: #e2e8f0; color: #334155; }
 
     .pill-btn input[type="radio"]:checked + span {
       background: var(--primary);
       color: white;
+      box-shadow: 0 2px 5px rgba(99, 102, 241, 0.3);
     }
 
     .submit-btn {
@@ -212,6 +225,13 @@
       border-radius: 10px;
       cursor: pointer;
       margin-top: 18px;
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.35);
     }
 
     #resultCard {
@@ -220,11 +240,18 @@
       padding: 15px;
       border-radius: 12px;
       text-align: center;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .PASS { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
     .FAIL { background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
 
+    /* Compact Side Footer */
     .footer-container {
       display: flex;
       align-items: center;
@@ -236,14 +263,14 @@
     }
 
     .footer-logos-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .footer-logo { max-height: 36px; width: auto; }
+    .footer-logo { max-height: 36px; width: auto; object-fit: contain; }
     .footer-divider { height: 24px; width: 1px; background-color: #cbd5e1; }
-    .footer-text { text-align: right; font-size: 11px; color: #94a3b8; line-height: 1.3; }
+    .footer-text { text-align: right; font-size: 11px; color: #94a3b8; line-height: 1.3; white-space: nowrap; }
 
     @media (max-width: 600px) {
       .footer-container { flex-direction: column; text-align: center; gap: 8px; }
       .footer-logos-group { justify-content: center; }
-      .footer-text { text-align: center; }
+      .footer-text { text-align: center; white-space: normal; }
       .footer-divider { display: none; }
     }
   </style>
@@ -260,23 +287,23 @@
       <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">New User Registration</h3>
       <form id="regForm">
         <div class="form-group">
-          <label>FULL NAME</label>
+          <label for="regName">FULL NAME</label>
           <input type="text" id="regName" placeholder="e.g. Dr. Abc" required>
         </div>
         <div class="form-group">
-          <label>USERNAME</label>
+          <label for="regUsername">USERNAME</label>
           <input type="text" id="regUsername" placeholder="e.g. abc123" required>
         </div>
         <div class="form-group">
-          <label>SET PASSWORD</label>
+          <label for="regPassword">SET PASSWORD</label>
           <input type="password" id="regPassword" placeholder="Enter password" required>
         </div>
         <div class="form-group">
-          <label>MYKAD NUMBER</label>
+          <label for="regMykad">MYKAD NUMBER</label>
           <input type="text" id="regMykad" placeholder="e.g. 900101025555" required>
         </div>
         <div class="form-group">
-          <label>EMAIL ADDRESS</label>
+          <label for="regEmail">EMAIL ADDRESS</label>
           <input type="email" id="regEmail" placeholder="e.g. abc123@example.com" required>
         </div>
 
@@ -294,11 +321,11 @@
       <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">User Login</h3>
       <form id="loginForm">
         <div class="form-group">
-          <label>USERNAME</label>
+          <label for="loginUsername">USERNAME</label>
           <input type="text" id="loginUsername" placeholder="e.g. abc123" required>
         </div>
         <div class="form-group">
-          <label>PASSWORD</label>
+          <label for="loginPassword">PASSWORD</label>
           <input type="password" id="loginPassword" placeholder="Enter password" required>
         </div>
 
@@ -314,11 +341,11 @@
     <div class="auth-container">
       <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Forgot Password</h3>
       <p style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 16px;">
-        Enter your registered email address below to receive your password.
+        Enter your registered email address below, and we will send your password to your inbox.
       </p>
       <form id="forgotForm">
         <div class="form-group">
-          <label>REGISTERED EMAIL ADDRESS</label>
+          <label for="forgotEmail">REGISTERED EMAIL ADDRESS</label>
           <input type="email" id="forgotEmail" placeholder="e.g. abc123@example.com" required>
         </div>
         <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="sendPasswordEmail()">SEND PASSWORD TO EMAIL</button>
@@ -327,7 +354,7 @@
     </div>
   </div>
 
-  <!-- VIEW 4: MCQ EXAM -->
+  <!-- VIEW 4: MCQ EXAM ANSWER SHEET -->
   <div id="examView" class="view-section">
     <div class="user-banner">
       <div class="user-info">Logged in as User: <span id="displayUsername" style="color: #1e1b4b;">-</span></div>
@@ -337,7 +364,7 @@
     <form id="mcqForm">
       <div class="controls-grid">
         <div class="form-group" style="margin:0;">
-          <label>QUESTION SET:</label>
+          <label for="setSelect">QUESTION SET:</label>
           <select id="setSelect" onchange="saveSetPreference()" required>
             <option value="Set A">Set A</option>
             <option value="Set B" selected>Set B</option>
@@ -349,7 +376,7 @@
         </div>
 
         <div class="form-group" style="margin:0;">
-          <label>SELECT PARTICIPANT NAME:</label>
+          <label for="participantSelect">SELECT PARTICIPANT NAME:</label>
           <select id="participantSelect" required>
             <option value="">-- Choose Participant --</option>
           </select>
@@ -385,14 +412,25 @@
 </div>
 
 <script>
-  // 🔗 APPS SCRIPT WEB APP BACKEND ENDPOINT
+  // 🔑 YOUR DEPLOYED APPS SCRIPT WEB APP BACKEND URL
   const API_URL = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
 
   var currentUser = { username: "", fullName: "" };
 
+  function loadSetPreference() {
+    var savedSet = localStorage.getItem('tlsm_selected_set');
+    if (savedSet) { document.getElementById('setSelect').value = savedSet; }
+  }
+
+  function saveSetPreference() {
+    var currentSet = document.getElementById('setSelect').value;
+    localStorage.setItem('tlsm_selected_set', currentSet);
+  }
+
   function showView(viewId) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
+    if (viewId === 'examView') { loadSetPreference(); }
   }
 
   function createQuestionCard(num) {
@@ -418,12 +456,20 @@
   for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
   for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
 
+  // 🌐 API Post Function with Request Error Handling
   function apiPost(action, payload) {
     return fetch(API_URL, {
       method: "POST",
+      mode: "cors",
+      redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: action, payload: payload })
-    }).then(res => res.json());
+    })
+    .then(res => res.json())
+    .catch(err => {
+      alert("Connection Error: " + err.message);
+      console.error("API Call Error:", err);
+    });
   }
 
   function registerUser() {
@@ -436,16 +482,18 @@
     };
 
     if (!payload.name || !payload.username || !payload.password || !payload.mykad || !payload.email) {
-      alert("Please fill in all fields!");
+      alert("Please fill in all registration fields!");
       return;
     }
 
     apiPost("register", payload).then(res => {
+      if (!res) return;
       alert(res.message);
       if (res.success) {
         currentUser.username = res.username;
         currentUser.fullName = res.fullName;
         document.getElementById('displayUsername').textContent = currentUser.username;
+        document.getElementById('regForm').reset();
         loadParticipantsDropdown();
         showView('examView');
       }
@@ -456,13 +504,18 @@
     var u = document.getElementById('loginUsername').value;
     var p = document.getElementById('loginPassword').value;
 
-    if (!u || !p) { alert("Please fill in both fields!"); return; }
+    if (!u || !p) {
+      alert("Please enter both username and password!");
+      return;
+    }
 
     apiPost("login", { username: u, password: p }).then(res => {
+      if (!res) return;
       if (res.success) {
         currentUser.username = res.username;
         currentUser.fullName = res.fullName;
         document.getElementById('displayUsername').textContent = currentUser.username;
+        document.getElementById('loginForm').reset();
         loadParticipantsDropdown();
         showView('examView');
       } else {
@@ -473,11 +526,18 @@
 
   function sendPasswordEmail() {
     var email = document.getElementById('forgotEmail').value;
-    if (!email) { alert("Please enter email!"); return; }
+    if (!email) {
+      alert("Please enter your registered email address!");
+      return;
+    }
 
     apiPost("recoverPassword", { email: email }).then(res => {
+      if (!res) return;
       alert(res.message);
-      if (res.success) { showView('loginView'); }
+      if (res.success) {
+        document.getElementById('forgotForm').reset();
+        showView('loginView');
+      }
     });
   }
 
@@ -485,7 +545,7 @@
     fetch(`${API_URL}?action=getParticipants`)
       .then(res => res.json())
       .then(res => {
-        if (res.success) {
+        if (res && res.success) {
           var select = document.getElementById('participantSelect');
           select.innerHTML = '<option value="">-- Choose Participant --</option>';
           res.participants.forEach(p => {
@@ -509,12 +569,20 @@
     var questionSet = document.getElementById('setSelect').value;
     var participantName = document.getElementById('participantSelect').value;
 
-    if (!participantName) { alert("Please select a participant!"); return; }
+    if (!participantName) {
+      alert("Please select a Participant Name from the list!");
+      return;
+    }
+
+    saveSetPreference();
 
     var answers = {};
     for (var i = 1; i <= 50; i++) {
       var sel = document.querySelector(`input[name="ans_q${i}"]:checked`);
-      if (!sel) { alert(`Please answer Question ${i}`); return; }
+      if (!sel) {
+        alert(`Please select an answer for Question ${i}`);
+        return;
+      }
       answers[`q${i}`] = sel.value;
     }
 
@@ -524,6 +592,7 @@
       evaluatorUsername: currentUser.username,
       answers: answers
     }).then(res => {
+      if (!res) return;
       var card = document.getElementById('resultCard');
       card.className = res.status;
       card.style.display = 'block';
@@ -533,6 +602,7 @@
         <p style="font-size: 12px; margin-top: 4px; opacity: 0.8;">(Saved to Google Sheet)</p>
       `;
       document.getElementById('mcqForm').reset();
+      loadSetPreference();
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
   }
