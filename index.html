@@ -1,3 +1,14 @@
+Here is the updated landing page with all **three Google Apps Script links** included as distinct action buttons:
+
+1. **LAUNCH EVALUATION SYSTEM 🚀** (Primary MCQ Diagnostic App)
+2. **VIEW ANALYTICS & SUMMARY 📊** (Summary / Analytics View)
+3. **OPEN SECONDARY EVALUATION APP 🌐** (Your new Google Apps Script Web App)
+
+---
+
+### 📄 Updated `index.html`
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +107,7 @@
       box-shadow: 0 10px 20px rgba(99, 102, 241, 0.35);
     }
 
-    /* Secondary Analytics Button */
+    /* Analytics Button */
     .btn-secondary {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       box-shadow: 0 8px 16px rgba(2, 132, 199, 0.25);
@@ -105,6 +116,17 @@
     .btn-secondary:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Third Portal Button */
+    .btn-tertiary {
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-tertiary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.35);
     }
 
     /* COMPACT SIDE FOOTER */
@@ -182,13 +204,16 @@
   <h2>TRAUMA LIFE SUPPORT EVALUATION</h2>
   <p class="subtitle">TLSM – Kedah Diagnostic Grading System</p>
 
-  <!-- DUAL LAUNCH BUTTONS -->
+  <!-- TRIPLE LAUNCH BUTTONS -->
   <div class="btn-group">
     <!-- LINK 1: MAIN EVALUATION SYSTEM -->
     <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec" class="launch-btn btn-primary" target="_blank">LAUNCH EVALUATION SYSTEM 🚀</a>
 
     <!-- LINK 2: ANALYTICS / SUMMARY VIEW -->
     <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec?page=summary" class="launch-btn btn-secondary" target="_blank">VIEW ANALYTICS & SUMMARY 📊</a>
+
+    <!-- LINK 3: SECONDARY APP PORTAL -->
+    <a href="https://script.google.com/macros/s/AKfycbz9IXMzhvt9a6D5_7lykHyBJym7oz3hVVtkk12A6vTszoCyS9GrCLVMGFB7d3r7n_vK/exec" class="launch-btn btn-tertiary" target="_blank">OPEN SECONDARY EVALUATION APP 🌐</a>
   </div>
 
   <!-- COMPACT SIDE FOOTER -->
@@ -209,3 +234,5 @@
 
 </body>
 </html>
+
+```
