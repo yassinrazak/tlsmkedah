@@ -20,6 +20,28 @@
       width: 100vw;
       height: 100vh;
       border: none;
+      position: relative;
+    }
+    .loading-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      z-index: 10;
+      display: none;
+    }
+    .loading-message.show {
+      display: block;
+    }
+    .error-message {
+      color: #ff6b6b;
+      padding: 20px;
+      background-color: rgba(255, 107, 107, 0.1);
+      border-radius: 5px;
+      margin: 20px;
     }
     iframe {
       width: 100%;
@@ -31,21 +53,46 @@
 <body>
 
   <div class="iframe-container" id="appWrapper">
-    <!-- Frame will be dynamically injected here -->
+    <div class="loading-message show" id="loadingMessage">
+      <p>Loading TLSM Kedah...</p>
+    </div>
   </div>
 
   <script>
     // Exact URL of your published Apps Script Web App
     const webAppUrl = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
+    
+    console.log('Attempting to load Google Apps Script from:', webAppUrl);
 
     window.addEventListener('DOMContentLoaded', () => {
       const wrapper = document.getElementById('appWrapper');
+      const loadingMessage = document.getElementById('loadingMessage');
       const iframe = document.createElement('iframe');
       
       // Setting iframe attributes
       iframe.src = webAppUrl;
-      iframe.setAttribute('allow', 'fullscreen; geolocation; microphone; camera');
-      iframe.setAttribute('sandbox', 'allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts');
+      iframe.setAttribute('allow', 'fullscreen; geolocation; microphone; camera; clipboard-read; clipboard-write');
+      iframe.setAttribute('sandbox', 'allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation allow-top-navigation-by-user-activation');
+      
+      // Success handler
+      iframe.onload = () => {
+        console.log('✓ Google Apps Script iframe loaded successfully');
+        loadingMessage.classList.remove('show');
+      };
+      
+      // Error handler
+      iframe.onerror = () => {
+        console.error('✗ Failed to load Google Apps Script iframe');
+        loadingMessage.innerHTML = '<div class="error-message"><strong>Error:</strong> Unable to load the app. Please verify:<br>1. The deployment URL is correct<br>2. The Apps Script web app is publicly accessible<br>3. Your internet connection is working<br><br>Check browser console (F12) for more details.</div>';
+      };
+      
+      // Timeout fallback
+      setTimeout(() => {
+        if (loadingMessage.classList.contains('show')) {
+          console.warn('⚠ Apps Script iframe took too long to load');
+          loadingMessage.innerHTML = '<div class="error-message"><strong>Timeout:</strong> The app is taking longer than expected to load. Please refresh the page or check the console for errors.</div>';
+        }
+      }, 10000);
       
       wrapper.appendChild(iframe);
     });
