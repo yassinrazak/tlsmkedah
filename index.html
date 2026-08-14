@@ -7,84 +7,44 @@
   <style>
     :root {
       --primary: #6366f1;
-      --primary-hover: #4f46e5;
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
       --glass-bg: rgba(255, 255, 255, 0.97);
-      --card-bg: #ffffff;
-      --card-border: #f1f5f9;
-      --text-dark: #0f172a;
     }
-
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg-gradient);
       min-height: 100vh;
       margin: 0;
       padding: 15px 10px;
-      color: var(--text-dark);
       box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
     .container {
       max-width: 480px;
       width: 100%;
       background: var(--glass-bg);
-      margin: 0 auto;
       padding: 30px 25px 20px 25px;
       border-radius: 20px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(16px);
       text-align: center;
     }
-
-    h2 {
-      text-align: center;
-      color: #1e1b4b;
-      margin: 0 0 4px 0;
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    p.subtitle {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 25px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .main-logo {
-      height: 70px;
-      width: auto;
-      margin-bottom: 15px;
-      object-fit: contain;
-    }
-
+    .main-logo { height: 70px; margin-bottom: 15px; }
+    h2 { color: #1e1b4b; margin: 0 0 4px 0; font-size: 24px; font-weight: 800; }
+    p.subtitle { color: #64748b; margin-bottom: 25px; font-size: 14px; }
     .launch-btn {
-      display: block;
       width: 100%;
       background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
       color: white;
-      text-decoration: none;
+      border: none;
       padding: 14px 0;
       font-size: 15px;
       font-weight: 800;
       border-radius: 10px;
+      cursor: pointer;
       box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
-      transition: all 0.2s ease;
-      box-sizing: border-box;
     }
-
-    .launch-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.35);
-    }
-
-    /* COMPACT SIDE FOOTER (Matching Apps Script) */
     .footer-container {
       display: flex;
       align-items: center;
@@ -92,91 +52,44 @@
       margin-top: 25px;
       padding-top: 12px;
       border-top: 1px solid #e2e8f0;
-      gap: 12px;
     }
-
-    .footer-logos-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .footer-logo {
-      max-height: 36px;
-      width: auto;
-      object-fit: contain;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    .footer-logo:hover {
-      transform: translateY(-1px);
-      opacity: 0.9;
-    }
-
-    .footer-divider {
-      height: 24px;
-      width: 1px;
-      background-color: #cbd5e1;
-    }
-
-    .footer-text {
-      text-align: right;
-      font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.3;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 480px) {
-      .footer-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
-      }
-
-      .footer-logos-group {
-        justify-content: center;
-      }
-
-      .footer-text {
-        text-align: center;
-        white-space: normal;
-      }
-
-      .footer-divider {
-        display: none;
-      }
-    }
+    .footer-logo { max-height: 36px; }
+    .footer-text { text-align: right; font-size: 11px; color: #94a3b8; }
+    #appFrame { display: none; width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 999; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- PRIMARY LOGO -->
-  <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="main-logo">
-  
+<div class="container" id="landingCard">
+  <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" class="main-logo">
   <h2>TRAUMA LIFE SUPPORT EVALUATION</h2>
   <p class="subtitle">TLSM – Kedah Diagnostic Grading System</p>
 
-  <!-- LAUNCH BUTTON -->
-  <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec" class="launch-btn">LAUNCH SYSTEM 🚀</a>
+  <button class="launch-btn" onclick="openSystem()">LAUNCH SYSTEM 🚀</button>
 
-  <!-- COMPACT SIDE FOOTER -->
   <footer class="footer-container">
-    <div class="footer-logos-group">
-      <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="footer-logo">
-      <div class="footer-divider"></div>
-      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" alt="Affiliate / Organization Logo" class="footer-logo">
-      <img src="https://lh3.googleusercontent.com/d/1TiqQcTeY3kTAYYs5visup6_qPC5vu7c4" alt="Partner Logo" class="footer-logo">
+    <div style="display:flex; gap:8px;">
+      <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1TiqQcTeY3kTAYYs5visup6_qPC5vu7c4" class="footer-logo">
     </div>
-
     <div class="footer-text">
-      © 2026 Dr. Yassin Razak<br>
-      TLSM – Kedah | All Rights Reserved.
+      © 2026 Dr. Yassin Razak<br>TLSM – Kedah
     </div>
   </footer>
 </div>
+
+<!-- Embedded App Target -->
+<iframe id="appFrame" src=""></iframe>
+
+<script>
+  function openSystem() {
+    const frame = document.getElementById('appFrame');
+    // Loads in-place without changing URL bar
+    frame.src = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
+    frame.style.display = "block";
+  }
+</script>
 
 </body>
 </html>
