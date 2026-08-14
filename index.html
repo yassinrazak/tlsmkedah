@@ -456,21 +456,22 @@
   for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
   for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
 
-  // 🌐 API Post Function with Request Error Handling
-  function apiPost(action, payload) {
-    return fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      redirect: "follow",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: action, payload: payload })
-    })
-    .then(res => res.json())
-    .catch(err => {
-      alert("Connection Error: " + err.message);
-      console.error("API Call Error:", err);
-    });
-  }
+// 🌐 Updated API Post Helper (Avoids CORS Preflight Blocking)
+function apiPost(action, payload) {
+  var formData = new URLSearchParams();
+  formData.append("action", action);
+  formData.append("payload", JSON.stringify(payload));
+
+  return fetch(API_URL, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .catch(err => {
+    alert("Connection Error: " + err.message);
+    console.error("API Call Error:", err);
+  });
+}
 
   function registerUser() {
     var payload = {
