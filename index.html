@@ -3,301 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TLSM Kedah Evaluation Portal</title>
+  <title>TLSM Kedah | Evaluation Portal</title>
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-      --glass-bg: rgba(255, 255, 255, 0.97);
-      --card-bg: #ffffff;
-      --card-border: #f1f5f9;
-      --text-dark: #0f172a;
+      --bg-gradient: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+      --glass-bg: rgba(15, 23, 42, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg-gradient);
       min-height: 100vh;
-      margin: 0;
-      padding: 20px 10px;
-      color: var(--text-dark);
-      box-sizing: border-box;
+      padding: 25px 12px;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .container {
-      max-width: 520px;
+      max-width: 480px;
       width: 100%;
       background: var(--glass-bg);
-      margin: 0 auto;
-      padding: 30px 25px 20px 25px;
-      border-radius: 20px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      padding: 35px 28px 24px 28px;
+      border-radius: 24px;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
       text-align: center;
     }
+
+    .main-logo { height: 75px; width: auto; margin-bottom: 18px; object-fit: contain; }
 
     h2 {
-      text-align: center;
-      color: #1e1b4b;
-      margin: 0 0 4px 0;
-      font-size: 24px;
+      color: #ffffff;
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
-    p.subtitle {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 25px;
-      font-size: 14px;
-      font-weight: 500;
-    }
+    p.subtitle { color: #818cf8; font-size: 13px; font-weight: 600; margin-bottom: 28px; }
 
-    .main-logo {
-      height: 70px;
-      width: auto;
-      margin-bottom: 15px;
-      object-fit: contain;
-    }
+    .btn-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
 
-    /* CARD CONTAINER STYLING */
-    .portal-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .portal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 16px;
-      text-align: left;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .portal-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-    }
-
-    .portal-card.card-primary::before { background-color: #6366f1; }
-    .portal-card.card-secondary::before { background-color: #0284c7; }
-    .portal-card.card-tertiary::before { background-color: #10b981; }
-
-    .portal-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #1e1b4b;
-      margin: 0;
-    }
-
-    .card-desc {
-      font-size: 12.5px;
-      color: #64748b;
-      margin: 0;
-      line-height: 1.4;
-    }
-
-    /* BUTTON STYLING */
-    .launch-btn {
-      display: block;
-      width: 100%;
-      color: white;
-      text-decoration: none;
-      padding: 12px 0;
-      font-size: 14px;
-      font-weight: 800;
-      border-radius: 8px;
-      text-align: center;
-      transition: all 0.2s ease;
-      box-sizing: border-box;
-      margin-top: 4px;
-    }
-
-    /* Primary Launch Button */
-    .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 6px 14px rgba(99, 102, 241, 0.35);
-    }
-
-    /* Analytics Button */
-    .btn-secondary {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
-    }
-
-    .btn-secondary:hover {
-      box-shadow: 0 6px 14px rgba(2, 132, 199, 0.35);
-    }
-
-    /* Third Portal Button */
-    .btn-tertiary {
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
-    }
-
-    .btn-tertiary:hover {
-      box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35);
-    }
-
-    /* COMPACT SIDE FOOTER */
-    .footer-container {
+    .futuristic-btn {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 25px;
-      padding-top: 12px;
-      border-top: 1px solid #e2e8f0;
-      gap: 12px;
+      width: 100%;
+      padding: 14px 18px;
+      text-decoration: none;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
     }
 
-    .footer-logos-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .btn-title { font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+    .btn-desc { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+    .btn-arrow { font-size: 16px; opacity: 0.8; }
 
-    .footer-logo {
-      max-height: 36px;
-      width: auto;
-      object-fit: contain;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
+    .futuristic-btn:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.25); }
 
-    .footer-logo:hover {
-      transform: translateY(-1px);
-      opacity: 0.9;
-    }
+    .btn-primary:hover { background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(79, 70, 229, 0.15) 100%); }
+    .btn-moulage:hover { background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(109, 40, 217, 0.15) 100%); }
+    .btn-secondary:hover { background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(3, 105, 161, 0.15) 100%); }
+    .btn-tertiary:hover { background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(4, 120, 87, 0.15) 100%); }
+    .btn-feedback:hover { background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(126, 34, 206, 0.15) 100%); }
 
-    .footer-divider {
-      height: 24px;
-      width: 1px;
-      background-color: #cbd5e1;
-    }
-
-    .footer-text {
-      text-align: right;
-      font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.3;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 480px) {
-      .footer-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
-      }
-
-      .footer-logos-group {
-        justify-content: center;
-      }
-
-      .footer-text {
-        text-align: center;
-        white-space: normal;
-      }
-
-      .footer-divider {
-        display: none;
-      }
-    }
+    .footer-container { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .footer-logos-group { display: flex; align-items: center; gap: 10px; }
+    .footer-logo { max-height: 32px; width: auto; }
+    .footer-divider { height: 20px; width: 1px; background-color: rgba(255, 255, 255, 0.15); }
+    .footer-text { text-align: right; font-size: 10.5px; color: #64748b; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- PRIMARY LOGO -->
   <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="main-logo">
-  
-  <h2>ADVANCED LIFE SUPPORT EVALUATION</h2>
-  <p class="subtitle">EDHKN Advanced Life Support : Online System</p>
+  <h2>TRAUMA LIFE SUPPORT EVALUATION</h2>
+  <p class="subtitle">TLSM – Kedah Diagnostic Grading System</p>
 
-  <!-- INDIVIDUAL PORTAL CARDS -->
-  <div class="portal-cards">
-    
-    <!-- CARD 1: MCQ SHEET EVALUATION SYSTEM -->
-    <div class="portal-card card-primary">
-      <div class="card-header">
-        <span class="card-icon">🚀</span>
-        <h3 class="card-title">TLSM KEDAH EVALUATION SYSTEM</h3>
+  <div class="btn-group">
+    <!-- 1. MCQ EVALUATION SYSTEM -->
+    <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec" class="futuristic-btn btn-primary" target="_blank">
+      <div class="btn-content">
+        <div class="btn-title">🚀 MCQ EVALUATION SYSTEM</div>
+        <div class="btn-desc">Launch candidate 50-item MCQ sheet</div>
       </div>
-      <p class="card-desc">Access the main diagnostic grading platform for live candidate assessment and practical skill evaluation.</p>
-      <a href="https://script.google.com/macros/s/AKfycbzyOt0YzYVg_3m4oLZLpMq53MR8_cz4N-pXOBNH9DZ1Go99DHUmIgYUjHGLTxZwOdDx/exec" class="launch-btn btn-primary" target="_blank">LAUNCH SYSTEM</a>
-    </div>
+      <span class="btn-arrow">➔</span>
+    </a>
 
-    <!-- CARD 2: EXAMINATION ANALYTICS & SUMMARY -->
-    <div class="portal-card card-secondary">
-      <div class="card-header">
-        <span class="card-icon">📊</span>
-        <h3 class="card-title">EXAMINATION ANALYTICS & SUMMARY</h3>
+    <!-- 2. NEW: OSCE MOULAGE EVALUATION -->
+    <a href="moulage.html" class="futuristic-btn btn-moulage">
+      <div class="btn-content">
+        <div class="btn-title">🩺 OSCE MOULAGE EXAM</div>
+        <div class="btn-desc">Grade 5-domain practical trauma scenario</div>
       </div>
-      <p class="card-desc">Review real-time performance metrics, aggregated score reports, and class statistics.</p>
-      <a href="https://script.google.com/macros/s/AKfycbzyOt0YzYVg_3m4oLZLpMq53MR8_cz4N-pXOBNH9DZ1Go99DHUmIgYUjHGLTxZwOdDx/exec?page=summary" class="launch-btn btn-secondary" target="_blank">VIEW ANALYTICS</a>
-    </div>
+      <span class="btn-arrow">➔</span>
+    </a>
 
-    <!-- CARD 3: ADVANCED LIFE SUPPORT APP PORTAL -->
-    <div class="portal-card card-tertiary">
-      <div class="card-header">
-        <span class="card-icon">🌐</span>
-        <h3 class="card-title">ADVANCED LIFE SUPPORT APP PORTAL</h3>
+    <!-- 3. ANALYTICS & SUMMARY DASHBOARD -->
+    <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec?page=summary" class="futuristic-btn btn-secondary" target="_blank">
+      <div class="btn-content">
+        <div class="btn-title">📊 ANALYTICS & SUMMARY</div>
+        <div class="btn-desc">View real-time candidate scores & pairing</div>
       </div>
-      <p class="card-desc">Open the auxiliary assessment tool for specialized stations and secondary evaluations.</p>
-      <a href="https://script.google.com/macros/s/AKfycbz9IXMzhvt9a6D5_7lykHyBJym7oz3hVVtkk12A6vTszoCyS9GrCLV_vK/exec" class="launch-btn btn-tertiary" target="_blank">OPEN PORTAL</a>
-    </div>
+      <span class="btn-arrow">➔</span>
+    </a>
 
+    <!-- 4. SECONDARY APP -->
+    <a href="https://script.google.com/macros/s/AKfycbz9IXMzhvt9a6D5_7lykHyBJym7oz3hVVtkk12A6vTszoCyS9GrCLVMGFB7d3r7n_vK/exec" class="futuristic-btn btn-tertiary" target="_blank">
+      <div class="btn-content">
+        <div class="btn-title">🌐 SECONDARY APP</div>
+        <div class="btn-desc">Access secondary Web App portal</div>
+      </div>
+      <span class="btn-arrow">➔</span>
+    </a>
+
+    <!-- 5. FEEDBACK -->
+    <a href="feedback.html" class="futuristic-btn btn-feedback">
+      <div class="btn-content">
+        <div class="btn-title">⭐ SYSTEM EVALUATION</div>
+        <div class="btn-desc">Rate user experience across 20 metrics</div>
+      </div>
+      <span class="btn-arrow">➔</span>
+    </a>
   </div>
 
-  <!-- COMPACT SIDE FOOTER -->
   <footer class="footer-container">
     <div class="footer-logos-group">
-      <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" class="footer-logo">
       <div class="footer-divider"></div>
-      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" alt="Affiliate / Organization Logo" class="footer-logo">
-      <img src="https://lh3.googleusercontent.com/d/1FfIouOObIKd3qXddZ-O8Taf_rskBaq6b" alt="Partner Logo" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1TiqQcTeY3kTAYYs5visup6_qPC5vu7c4" class="footer-logo">
     </div>
-
     <div class="footer-text">
-      © 2026 Dr. Yassin Razak<br>
-      TLSM – Kedah | All Rights Reserved.
+      © 2026 Dr. Yassin Razak<br>TLSM – Kedah
     </div>
   </footer>
 </div>
