@@ -9,228 +9,168 @@
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --moulage-color: #8b5cf6;
-      --bg-gradient: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
-      --glass-bg: rgba(15, 23, 42, 0.75);
-      --glass-border: rgba(255, 255, 255, 0.12);
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      --glass-bg: rgba(255, 255, 255, 0.97);
       --card-bg: #ffffff;
       --text-dark: #0f172a;
-      --text-main: #f8fafc;
-      --text-sub: #94a3b8;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg-gradient);
       min-height: 100vh;
       margin: 0;
-      padding: 25px 12px;
-      color: var(--text-main);
+      padding: 15px 10px;
+      color: var(--text-dark);
+      box-sizing: border-box;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
     }
 
     .container {
-      max-width: 480px;
+      max-width: 960px;
       width: 100%;
       background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      padding: 35px 28px 24px 28px;
-      border-radius: 24px;
-      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      margin: 0 auto;
+      padding: 25px 25px 15px 25px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+      box-sizing: border-box;
     }
 
-    /* Ambient Glow Effect */
-    .container::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    .main-logo {
-      height: 75px;
-      width: auto;
-      margin-bottom: 18px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.35));
-    }
+    .auth-container { max-width: 400px; margin: 10px auto; }
 
     h2 {
-      color: #ffffff;
-      font-size: 22px;
+      text-align: center;
+      color: #1e1b4b;
+      margin: 0 0 4px 0;
+      font-size: 26px;
       font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 4px;
+      letter-spacing: -0.5px;
     }
 
     p.subtitle {
-      color: #818cf8;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      margin-bottom: 28px;
-    }
-
-    /* FUTURISTIC BUTTON GROUP */
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      text-align: center;
+      color: #64748b;
       margin-bottom: 20px;
-    }
-
-    .futuristic-btn {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 14px 18px;
-      text-decoration: none;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-    }
-
-    .btn-content { text-align: left; }
-
-    .btn-title {
       font-size: 14px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .toggle-link { text-align: center; margin-top: 12px; font-size: 13px; color: #64748b; }
+    .toggle-link a { color: var(--primary); font-weight: 700; text-decoration: none; cursor: pointer; }
+    .toggle-link a:hover { text-decoration: underline; }
+
+    .form-group { margin-bottom: 14px; }
+
+    label { font-weight: 700; color: #334155; display: block; margin-bottom: 5px; font-size: 13px; }
+
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #ffffff;
+      color: #1e293b;
+      outline: none;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    /* User Banner & Mode Switcher */
+    .user-banner {
+      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+      padding: 12px 18px;
+      border-radius: 12px;
       display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-desc {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-top: 2px;
-      font-weight: 400;
-    }
-
-    .btn-arrow {
-      font-size: 16px;
-      transition: transform 0.3s ease;
-      opacity: 0.8;
-      color: #ffffff;
-    }
-
-    /* Hover States & Glow Accents */
-    .futuristic-btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .futuristic-btn:hover .btn-arrow {
-      transform: translateX(4px);
-      opacity: 1;
-    }
-
-    /* Primary MCQ Glow */
-    .btn-primary:hover {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(79, 70, 229, 0.15) 100%);
-      box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.4), inset 0 0 12px rgba(99, 102, 241, 0.2);
-    }
-
-    /* OSCE Moulage Glow */
-    .btn-moulage:hover {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(109, 40, 217, 0.15) 100%);
-      box-shadow: 0 8px 25px -5px rgba(139, 92, 246, 0.4), inset 0 0 12px rgba(139, 92, 246, 0.2);
-    }
-
-    /* Analytics Glow */
-    .btn-secondary:hover {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25) 0%, rgba(3, 105, 161, 0.15) 100%);
-      box-shadow: 0 8px 25px -5px rgba(14, 165, 233, 0.4), inset 0 0 12px rgba(14, 165, 233, 0.2);
-    }
-
-    /* Secondary Portal Glow */
-    .btn-tertiary:hover {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(4, 120, 87, 0.15) 100%);
-      box-shadow: 0 8px 25px -5px rgba(16, 185, 129, 0.4), inset 0 0 12px rgba(16, 185, 129, 0.2);
-    }
-
-    /* Feedback Glow */
-    .btn-feedback:hover {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(126, 34, 206, 0.15) 100%);
-      box-shadow: 0 8px 25px -5px rgba(168, 85, 247, 0.4), inset 0 0 12px rgba(168, 85, 247, 0.2);
-    }
-
-    /* COMPACT SIDE FOOTER */
-    .footer-container {
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-top: 25px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      gap: 12px;
-    }
-
-    .footer-logos-group {
-      display: flex;
       align-items: center;
-      gap: 10px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .footer-logo {
-      max-height: 32px;
-      width: auto;
-      object-fit: contain;
-      opacity: 0.85;
+    .user-info { font-weight: 700; color: #3730a3; font-size: 13px; }
+
+    .mode-tab-group { display: flex; gap: 8px; }
+
+    .mode-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.7);
+      color: #3730a3;
       transition: all 0.2s ease;
     }
 
-    .footer-logo:hover {
-      opacity: 1;
-      transform: scale(1.05);
+    .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4); }
+    .mode-btn.moulage-active { background: var(--moulage-color); color: white; box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4); }
+
+    .logout-btn {
+      background: #ef4444; color: white; border: none; padding: 6px 12px;
+      border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;
     }
 
-    .footer-divider {
-      height: 20px;
-      width: 1px;
-      background-color: rgba(255, 255, 255, 0.15);
+    /* MCQ Grid */
+    .controls-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 15px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .vertical-columns-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 900px) { .vertical-columns-container { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .vertical-columns-container { grid-template-columns: 1fr; } }
+
+    .column-stream { display: flex; flex-direction: column; gap: 6px; }
+    .column-header-badge { text-align: center; background: #e0e7ff; color: #3730a3; padding: 5px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; margin-bottom: 2px; }
+
+    .q-card { background: var(--card-bg); border: 1px solid #e2e8f0; padding: 5px 7px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .q-num-label { font-weight: 800; color: #475569; font-size: 12px; min-width: 28px; }
+    .pill-group { display: flex; gap: 3px; flex: 1; }
+    .pill-btn { flex: 1; text-align: center; position: relative; }
+    .pill-btn input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .pill-btn span { display: block; padding: 4px 0; background: #f1f5f9; border-radius: 5px; font-size: 11px; font-weight: 700; color: #64748b; cursor: pointer; user-select: none; }
+    .pill-btn input[type="radio"]:checked + span { background: var(--primary); color: white; }
+
+    /* Moulage Styles */
+    .moulage-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .section-header { font-size: 13px; font-weight: 800; color: var(--moulage-color); text-transform: uppercase; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #f3e8ff; }
+    .chk-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #f1f5f9; }
+    .chk-item:last-child { border-bottom: none; }
+    .chk-item input[type="checkbox"] { width: 17px; height: 18px; margin-top: 2px; accent-color: var(--moulage-color); cursor: pointer; }
+    .chk-label { font-size: 12.5px; color: #334155; flex: 1; line-height: 1.35; }
+
+    .live-score-banner { position: sticky; top: 10px; z-index: 99; background: var(--moulage-color); color: white; padding: 10px 16px; border-radius: 10px; display: flex; justify-content: space-between; font-weight: 800; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white; border: none; padding: 13px; font-size: 15px; font-weight: 800;
+      border-radius: 10px; cursor: pointer; margin-top: 16px;
     }
 
-    .footer-text {
-      text-align: right;
-      font-size: 10.5px;
-      color: #64748b;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
+    #resultCard { display: none; margin-top: 18px; padding: 15px; border-radius: 12px; text-align: center; }
+    .PASS { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
+    .REMEDIAL { background: #fef9c3; color: #854d0e; border: 2px solid #fde047; }
+    .FAIL { background: #fee2e2; color: #991b1b; border: 2px solid #fca5a5; }
 
-    @media (max-width: 480px) {
-      .footer-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-      }
+    .footer-container { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 10px; border-top: 1px solid #e2e8f0; gap: 12px; }
+    .footer-logos-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .footer-logo { max-height: 36px; width: auto; object-fit: contain; }
+    .footer-divider { height: 24px; width: 1px; background-color: #cbd5e1; }
+    .footer-text { text-align: right; font-size: 11px; color: #94a3b8; line-height: 1.3; white-space: nowrap; }
 
+    @media (max-width: 600px) {
+      .footer-container { flex-direction: column; text-align: center; gap: 8px; }
       .footer-logos-group { justify-content: center; }
       .footer-text { text-align: center; white-space: normal; }
       .footer-divider { display: none; }
@@ -240,77 +180,397 @@
 <body>
 
 <div class="container">
-  <!-- PRIMARY LOGO -->
-  <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="main-logo">
-  
   <h2>TRAUMA LIFE SUPPORT EVALUATION</h2>
   <p class="subtitle">TLSM – Kedah Diagnostic Grading System</p>
 
-  <!-- ACTION PORTAL BUTTONS -->
-  <div class="btn-group">
-    
-    <!-- 1. UNIFIED MCQ EVALUATION PORTAL -->
-    <a href="moulage.html" class="futuristic-btn btn-primary">
-      <div class="btn-content">
-        <div class="btn-title">🚀 MCQ EVALUATION SYSTEM</div>
-        <div class="btn-desc">Launch candidate 50-item MCQ grading sheet</div>
-      </div>
-      <span class="btn-arrow">➔</span>
-    </a>
-
-    <!-- 2. UNIFIED OSCE MOULAGE EVALUATION PORTAL -->
-    <a href="moulage.html" class="futuristic-btn btn-moulage">
-      <div class="btn-content">
-        <div class="btn-title">🩺 OSCE MOULAGE EXAM</div>
-        <div class="btn-desc">Grade 13-section practical trauma scenario</div>
-      </div>
-      <span class="btn-arrow">➔</span>
-    </a>
-
-    <!-- 3. REAL-TIME ANALYTICS & SUMMARY DASHBOARD -->
-    <a href="https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec?page=summary" class="futuristic-btn btn-secondary" target="_blank">
-      <div class="btn-content">
-        <div class="btn-title">📊 ANALYTICS & SUMMARY</div>
-        <div class="btn-desc">View paired candidate scores & analytics</div>
-      </div>
-      <span class="btn-arrow">➔</span>
-    </a>
-
-    <!-- 4. SECONDARY APP PORTAL -->
-    <a href="https://script.google.com/macros/s/AKfycbz9IXMzhvt9a6D5_7lykHyBJym7oz3hVVtkk12A6vTszoCyS9GrCLVMGFB7d3r7n_vK/exec" class="futuristic-btn btn-tertiary" target="_blank">
-      <div class="btn-content">
-        <div class="btn-title">🌐 SECONDARY APP</div>
-        <div class="btn-desc">Access secondary Web App portal</div>
-      </div>
-      <span class="btn-arrow">➔</span>
-    </a>
-
-    <!-- 5. 20-METRIC SYSTEM FEEDBACK SURVEY -->
-    <a href="feedback.html" class="futuristic-btn btn-feedback">
-      <div class="btn-content">
-        <div class="btn-title">⭐ SYSTEM EVALUATION & FEEDBACK</div>
-        <div class="btn-desc">Rate user experience across 20 metrics</div>
-      </div>
-      <span class="btn-arrow">➔</span>
-    </a>
-
+  <!-- VIEW 1: LOGIN (DEFAULT - ACCESS GUARD) -->
+  <div id="loginView" class="view-section active">
+    <div class="auth-container">
+      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Evaluator Login</h3>
+      <form id="loginForm">
+        <div class="form-group"><label for="loginUsername">USERNAME</label><input type="text" id="loginUsername" placeholder="e.g. abc123" required></div>
+        <div class="form-group"><label for="loginPassword">PASSWORD</label><input type="password" id="loginPassword" placeholder="Enter password" required></div>
+        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="loginUser()">LOG IN TO ACCESS SYSTEM</button>
+      </form>
+      <div class="toggle-link"><a onclick="showView('forgotView')">Forgot Password?</a></div>
+      <div class="toggle-link">Need an account? <a onclick="showView('regView')">Register Here</a></div>
+    </div>
   </div>
 
-  <!-- COMPACT SIDE FOOTER -->
+  <!-- VIEW 2: REGISTRATION -->
+  <div id="regView" class="view-section">
+    <div class="auth-container">
+      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Evaluator Registration</h3>
+      <form id="regForm">
+        <div class="form-group"><label for="regName">FULL NAME</label><input type="text" id="regName" placeholder="e.g. Dr. Abc" required></div>
+        <div class="form-group"><label for="regUsername">USERNAME</label><input type="text" id="regUsername" placeholder="e.g. abc123" required></div>
+        <div class="form-group"><label for="regPassword">SET PASSWORD</label><input type="password" id="regPassword" placeholder="Enter password" required></div>
+        <div class="form-group"><label for="regMykad">MYKAD NUMBER</label><input type="text" id="regMykad" placeholder="e.g. 900101025555" required></div>
+        <div class="form-group"><label for="regEmail">EMAIL ADDRESS</label><input type="email" id="regEmail" placeholder="e.g. abc123@example.com" required></div>
+        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="registerUser()">REGISTER ACCOUNT</button>
+      </form>
+      <div class="toggle-link">Already registered? <a onclick="showView('loginView')">Log In Here</a></div>
+    </div>
+  </div>
+
+  <!-- VIEW 3: FORGOT PASSWORD -->
+  <div id="forgotView" class="view-section">
+    <div class="auth-container">
+      <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Forgot Password</h3>
+      <form id="forgotForm">
+        <div class="form-group"><label for="forgotEmail">REGISTERED EMAIL ADDRESS</label><input type="email" id="forgotEmail" placeholder="e.g. abc123@example.com" required></div>
+        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="sendPasswordEmail()">SEND PASSWORD</button>
+      </form>
+      <div class="toggle-link">Back to <a onclick="showView('loginView')">Log In</a></div>
+    </div>
+  </div>
+
+  <!-- VIEW 4: MAIN EVALUATION DASHBOARD (LOCKED UNTIL AUTHENTICATED) -->
+  <div id="appView" class="view-section">
+    <div class="user-banner">
+      <div class="user-info">Logged Evaluator: <span id="displayUsername" style="color: #1e1b4b;">-</span></div>
+      <div class="mode-tab-group">
+        <button id="tabMcq" class="mode-btn active" onclick="switchMode('mcq')">📝 MCQ Sheet</button>
+        <button id="tabMoulage" class="mode-btn" onclick="switchMode('moulage')">🩺 OSCE Moulage</button>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- MODE 1: MCQ ANSWER SHEET -->
+    <div id="mcqMode" class="eval-mode">
+      <form id="mcqForm">
+        <div class="controls-grid">
+          <div class="form-group" style="margin:0;">
+            <label for="setSelect">QUESTION SET:</label>
+            <select id="setSelect" onchange="saveSetPreference()" required>
+              <option value="Set A">Set A</option>
+              <option value="Set B" selected>Set B</option>
+              <option value="Set C">Set C</option>
+              <option value="Set D">Set D</option>
+              <option value="Set E">Set E</option>
+              <option value="Set F">Set F</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label for="mcqParticipantSelect">SELECT CANDIDATE NAME:</label>
+            <select id="mcqParticipantSelect" class="participant-dropdown" required><option value="">-- Choose Participant --</option></select>
+          </div>
+        </div>
+
+        <div class="vertical-columns-container">
+          <div class="column-stream"><div class="column-header-badge">Q1 – Q13</div><div id="colStream1"></div></div>
+          <div class="column-stream"><div class="column-header-badge">Q14 – Q25</div><div id="colStream2"></div></div>
+          <div class="column-stream"><div class="column-header-badge">Q26 – Q38</div><div id="colStream3"></div></div>
+          <div class="column-stream"><div class="column-header-badge">Q39 – Q50</div><div id="colStream4"></div></div>
+        </div>
+
+        <button type="button" class="submit-btn" onclick="submitExam()">SUBMIT MCQ & AUTO GRADE</button>
+      </form>
+    </div>
+
+    <!-- MODE 2: OSCE MOULAGE CHECKLIST -->
+    <div id="moulageMode" class="eval-mode" style="display: none;">
+      <div class="live-score-banner">
+        <span>SCORE: <span id="checkedCount">0</span> / 32 Items</span>
+        <span id="pctDisplay">0%</span>
+      </div>
+
+      <form id="moulageForm">
+        <div class="moulage-card">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div class="form-group">
+              <label for="moulageParticipantSelect">STUDENT'S NAME:</label>
+              <select id="moulageParticipantSelect" class="participant-dropdown" required><option value="">-- Choose Candidate --</option></select>
+            </div>
+            <div class="form-group">
+              <label for="studentNumber">STUDENT'S NUMBER:</label>
+              <input type="text" id="studentNumber" placeholder="e.g. TLSM-2026-01" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 13 OFFICIAL MOULAGE SECTIONS -->
+        <div class="moulage-card"><div class="section-header">1. Team Dynamic</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_1_1"><label class="chk-label" for="m_1_1">Assign team members role</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_1_2"><label class="chk-label" for="m_1_2">Able to give instruction clearly</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_1_3"><label class="chk-label" for="m_1_3">Has characteristic of Good Team Leader</label></div><input type="text" id="cmt_1" placeholder="Comment..." style="margin-top:8px;"></div>
+        
+        <div class="moulage-card"><div class="section-header">2. Zero Point Survey (Preparation)</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_2_1"><label class="chk-label" for="m_2_1">Brief team members using "AT MIST"</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_2_2"><label class="chk-label" for="m_2_2">Assign team members role</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_2_3"><label class="chk-label" for="m_2_3">Verbalize PPE usage (mask, apron, gloves)</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_2_4"><label class="chk-label" for="m_2_4">Preparation of equipment</label></div><input type="text" id="cmt_2" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">3. Trauma Reception (Rapid 5-Sec Assessment)</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_3_1"><label class="chk-label" for="m_3_1">Assess for airway patency</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_3_2"><label class="chk-label" for="m_3_2">Assess for central pulse</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_3_3"><label class="chk-label" for="m_3_3">Assess for visible catastrophic hemorrhage</label></div><input type="text" id="cmt_3" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">4. Catastrophic External Bleeding</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_4_1"><label class="chk-label" for="m_4_1">Recognition & immediate control of catastrophic bleeding</label></div><input type="text" id="cmt_4" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">5. Airway & Cervical Collar</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_5_1"><label class="chk-label" for="m_5_1">Assess airway appropriately</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_5_2"><label class="chk-label" for="m_5_2">Apply Hard Cervical Collar & Head Immobilizer correctly</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_5_3"><label class="chk-label" for="m_5_3">Recognise life-threatening airway problems</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_5_4"><label class="chk-label" for="m_5_4">Correct emergency intervention (jaw thrust, chin lift, OPA, suction)</label></div><input type="text" id="cmt_5" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">6. Breathing & Ventilation</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_6_1"><label class="chk-label" for="m_6_1">Trachea assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_6_2"><label class="chk-label" for="m_6_2">Chest examination by IPPA</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_6_3"><label class="chk-label" for="m_6_3">Recognise life-threatening thoracic injuries (ATOMTC)</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_6_4"><label class="chk-label" for="m_6_4">Correct emergency intervention</label></div><input type="text" id="cmt_6" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">7. Circulation</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_1"><label class="chk-label" for="m_7_1">Peripheral circulation assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_2"><label class="chk-label" for="m_7_2">Abdomen assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_3"><label class="chk-label" for="m_7_3">Pelvic assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_4"><label class="chk-label" for="m_7_4">Upper & lower limbs assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_5"><label class="chk-label" for="m_7_5">Recognise exsanguinating blood loss</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_6"><label class="chk-label" for="m_7_6">Emergency intervention for shock (warm saline, blood, MTP, TXA)</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_7_7"><label class="chk-label" for="m_7_7">Specialized techniques (pelvic binder, splint, tourniquet, pericardiocentesis, IO)</label></div><input type="text" id="cmt_7" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">8. Disability</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_8_1"><label class="chk-label" for="m_8_1">Pupils assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_8_2"><label class="chk-label" for="m_8_2">GCS assessment</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_8_3"><label class="chk-label" for="m_8_3">Interpret GCS result (mild, moderate, severe)</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_8_4"><label class="chk-label" for="m_8_4">Neurological deficit assessment</label></div><input type="text" id="cmt_8" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">9. Exposure</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_9_1"><label class="chk-label" for="m_9_1">Proper exposure demonstration</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_9_2"><label class="chk-label" for="m_9_2">Prevention of hypothermia technique</label></div><input type="text" id="cmt_9" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">10. Primary Adjunct</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_10_1"><label class="chk-label" for="m_10_1">Order appropriate primary adjuncts</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_10_2"><label class="chk-label" for="m_10_2">Correct interpretation</label></div><input type="text" id="cmt_10" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">11. Clinical Diagnosis</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_11_1"><label class="chk-label" for="m_11_1">Give appropriate clinical diagnosis</label></div><input type="text" id="cmt_11" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">12. Definitive Plan</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_12_1"><label class="chk-label" for="m_12_1">Verbalize definitive treatment plan (Transfer / Referral)</label></div><input type="text" id="cmt_12" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card"><div class="section-header">13. Secondary Survey</div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_13_1"><label class="chk-label" for="m_13_1">Head to toe examination</label></div><div class="chk-item"><input type="checkbox" class="moulage-chk" id="m_13_2"><label class="chk-label" for="m_13_2">Order appropriate secondary adjuncts</label></div><input type="text" id="cmt_13" placeholder="Comment..." style="margin-top:8px;"></div>
+
+        <div class="moulage-card">
+          <div class="form-group"><label for="overallComments">OVERALL MOULAGE COMMENTS:</label><textarea id="overallComments" rows="3" placeholder="Notes for candidate..."></textarea></div>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div class="form-group">
+              <label for="finalStatusSelect">DECISION:</label>
+              <select id="finalStatusSelect" required><option value="PASS">PASS</option><option value="REMEDIAL">REMEDIAL</option><option value="FAIL">FAIL</option></select>
+            </div>
+            <div class="form-group">
+              <label for="bestStudentSelect">BEST STUDENT?</label>
+              <select id="bestStudentSelect" required><option value="N">No (N)</option><option value="Y">Yes (Y) ⭐</option></select>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);" onclick="submitOfficialMoulage()">SUBMIT MOULAGE EVALUATION 🩺</button>
+      </form>
+    </div>
+
+    <!-- RESULT BANNER -->
+    <div id="resultCard"></div>
+  </div>
+
   <footer class="footer-container">
     <div class="footer-logos-group">
       <img src="https://lh3.googleusercontent.com/d/1gRcpYsMe4j9wEI9WDQmnwFwVFPenox86" alt="TLSM Logo" class="footer-logo">
       <div class="footer-divider"></div>
       <img src="https://lh3.googleusercontent.com/d/1Bq6Oyc9cf-bihnZS03qLiAEzoFFj29Io" alt="Organization Logo" class="footer-logo">
-      <img src="https://lh3.googleusercontent.com/d/1TiqQcTeY3kTAYYs5visup6_qPC5vu7c4" alt="Partner Logo" class="footer-logo">
+      <img src="https://lh3.googleusercontent.com/d/1FfIouOObIKd3qXddZ-O8Taf_rskBaq6b" alt="Partner Logo" class="footer-logo">
     </div>
-
-    <div class="footer-text">
-      © 2026 Dr. Yassin Razak<br>
-      TLSM – Kedah | All Rights Reserved.
-    </div>
+    <div class="footer-text">© 2026 Dr. Yassin Razak<br>TLSM – Kedah | All Rights Reserved.</div>
   </footer>
 </div>
+
+<script>
+  // 🔗 PUBLIC EXECUTION ENDPOINT (CORS & JSONP SAFE)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
+  var currentUser = { username: "", fullName: "" };
+
+  // --- ACCESS GUARD: CHECK SESSION ON LOAD ---
+  window.addEventListener('DOMContentLoaded', function() {
+    var storedUser = sessionStorage.getItem('tlsm_user');
+    if (storedUser) {
+      try {
+        currentUser = JSON.parse(storedUser);
+        document.getElementById('displayUsername').textContent = currentUser.username;
+        loadParticipantsDropdown();
+        showView('appView');
+      } catch(e) {
+        logout();
+      }
+    } else {
+      showView('loginView'); // Force login view if unauthenticated
+    }
+  });
+
+  function showView(viewId) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+  }
+
+  function switchMode(mode) {
+    document.getElementById('mcqMode').style.display = mode === 'mcq' ? 'block' : 'none';
+    document.getElementById('moulageMode').style.display = mode === 'moulage' ? 'block' : 'none';
+
+    document.getElementById('tabMcq').className = mode === 'mcq' ? 'mode-btn active' : 'mode-btn';
+    document.getElementById('tabMoulage').className = mode === 'moulage' ? 'mode-btn moulage-active' : 'mode-btn';
+  }
+
+  // Live Score Calculator
+  const checkboxes = document.querySelectorAll('.moulage-chk');
+  checkboxes.forEach(chk => chk.addEventListener('change', updateLiveScore));
+  function updateLiveScore() {
+    const checked = document.querySelectorAll('.moulage-chk:checked').length;
+    const total = checkboxes.length;
+    document.getElementById('checkedCount').textContent = checked;
+    document.getElementById('pctDisplay').textContent = Math.round((checked / total) * 100) + "%";
+  }
+
+  // Generate 50 MCQ Cards
+  function createQuestionCard(num) {
+    var card = document.createElement('div');
+    card.className = 'q-card';
+    var optionsHtml = ['A', 'B', 'C', 'D', 'E'].map(opt => `
+      <label class="pill-btn"><input type="radio" name="ans_q${num}" value="${opt}"><span>${opt}</span></label>
+    `).join('');
+    card.innerHTML = `<div class="q-num-label">Q${num}</div><div class="pill-group">${optionsHtml}</div>`;
+    return card;
+  }
+
+  const col1 = document.getElementById('colStream1');
+  const col2 = document.getElementById('colStream2');
+  const col3 = document.getElementById('colStream3');
+  const col4 = document.getElementById('colStream4');
+  for (let i = 1; i <= 13; i++) { col1.appendChild(createQuestionCard(i)); }
+  for (let i = 14; i <= 25; i++) { col2.appendChild(createQuestionCard(i)); }
+  for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
+  for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
+
+  // JSONP Communication Engine
+  function jsonpRequest(action, payload) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+        resolve(data);
+      };
+      const script = document.createElement('script');
+      const encodedPayload = encodeURIComponent(JSON.stringify(payload || {}));
+      script.src = `${API_URL}?action=${action}&payload=${encodedPayload}&callback=${callbackName}`;
+      script.onerror = function() { 
+        delete window[callbackName]; 
+        if (script.parentNode) script.parentNode.removeChild(script); 
+        reject(new Error("JSONP Request Error")); 
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  function apiPost(action, payload) {
+    return jsonpRequest(action, payload).catch(err => alert("Connection Error: Unable to connect to Google Database."));
+  }
+
+  function registerUser() {
+    var payload = { 
+      name: document.getElementById('regName').value, 
+      username: document.getElementById('regUsername').value, 
+      password: document.getElementById('regPassword').value, 
+      mykad: document.getElementById('regMykad').value, 
+      email: document.getElementById('regEmail').value 
+    };
+    if (!payload.name || !payload.username || !payload.password || !payload.mykad || !payload.email) { 
+      alert("Fill all fields!"); return; 
+    }
+    apiPost("register", payload).then(res => {
+      if (!res) return; 
+      alert(res.message);
+      if (res.success) { 
+        currentUser.username = res.username; 
+        currentUser.fullName = res.fullName; 
+        sessionStorage.setItem('tlsm_user', JSON.stringify(currentUser));
+        document.getElementById('displayUsername').textContent = currentUser.username; 
+        loadParticipantsDropdown(); 
+        showView('appView'); 
+      }
+    });
+  }
+
+  function loginUser() {
+    var u = document.getElementById('loginUsername').value;
+    var p = document.getElementById('loginPassword').value;
+    if (!u || !p) { alert("Enter username & password!"); return; }
+    apiPost("login", { username: u, password: p }).then(res => {
+      if (!res) return;
+      if (res.success) {
+        currentUser.username = res.username; 
+        currentUser.fullName = res.fullName;
+        sessionStorage.setItem('tlsm_user', JSON.stringify(currentUser));
+        document.getElementById('displayUsername').textContent = currentUser.username;
+        loadParticipantsDropdown(); 
+        showView('appView');
+      } else { 
+        alert(res.message); 
+      }
+    });
+  }
+
+  function sendPasswordEmail() {
+    var email = document.getElementById('forgotEmail').value;
+    if (!email) { alert("Enter email!"); return; }
+    apiPost("recoverPassword", { email: email }).then(res => { 
+      if (!res) return; alert(res.message); 
+      if (res.success) showView('loginView'); 
+    });
+  }
+
+  function loadParticipantsDropdown() {
+    jsonpRequest('getParticipants', {}).then(res => {
+      if (res && res.success) {
+        document.querySelectorAll('.participant-dropdown').forEach(select => {
+          select.innerHTML = '<option value="">-- Choose Candidate --</option>';
+          res.participants.forEach(p => {
+            var opt = document.createElement('option'); opt.value = p.fullName; opt.textContent = p.fullName;
+            select.appendChild(opt);
+          });
+        });
+      }
+    });
+  }
+
+  function logout() {
+    currentUser = { username: "", fullName: "" };
+    sessionStorage.removeItem('tlsm_user');
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('mcqForm').reset();
+    document.getElementById('moulageForm').reset();
+    document.getElementById('loginForm').reset();
+    updateLiveScore();
+    showView('loginView');
+  }
+
+  function submitExam() {
+    var questionSet = document.getElementById('setSelect').value;
+    var participantName = document.getElementById('mcqParticipantSelect').value;
+    if (!participantName) { alert("Select a Candidate!"); return; }
+
+    var answers = {};
+    for (var i = 1; i <= 50; i++) {
+      var sel = document.querySelector(`input[name="ans_q${i}"]:checked`);
+      if (!sel) { alert(`Please answer Question ${i}`); return; }
+      answers[`q${i}`] = sel.value;
+    }
+
+    apiPost("submitExam", { questionSet: questionSet, participantName: participantName, evaluatorUsername: currentUser.username, answers: answers }).then(res => {
+      if (!res) return;
+      var card = document.getElementById('resultCard');
+      card.className = res.status; card.style.display = 'block';
+      card.innerHTML = `<h2>MCQ RESULT (${res.set}): ${res.score} / ${res.total} (${res.percentage}%)</h2><p>Participant: ${res.participant} | Status: ${res.status}</p>`;
+      document.getElementById('mcqForm').reset();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+  }
+
+  function submitOfficialMoulage() {
+    var studentName = document.getElementById('moulageParticipantSelect').value;
+    var studentNumber = document.getElementById('studentNumber').value;
+    if (!studentName || !studentNumber) { alert("Fill Candidate Name & Student Number!"); return; }
+
+    var totalItems = checkboxes.length;
+    var checkedItems = document.querySelectorAll('.moulage-chk:checked').length;
+    var pct = Math.round((checkedItems / totalItems) * 100);
+
+    var sectionComments = [];
+    for (var i = 1; i <= 13; i++) { sectionComments.push(document.getElementById('cmt_' + i).value || "-"); }
+
+    var payload = {
+      studentName: studentName, studentNumber: studentNumber, instructor: currentUser.fullName || currentUser.username,
+      checkedCount: checkedItems, totalItems: totalItems, percentage: pct, sectionComments: sectionComments,
+      overallComments: document.getElementById('overallComments').value, finalStatus: document.getElementById('finalStatusSelect').value,
+      bestStudent: document.getElementById('bestStudentSelect').value
+    };
+
+    apiPost("submitOfficialMoulage", payload).then(res => {
+      if (!res) return;
+      var card = document.getElementById('resultCard');
+      card.className = res.status; card.style.display = 'block';
+      card.innerHTML = `<h2>MOULAGE RESULT: ${res.score} / ${res.total} (${res.percentage}%)</h2><p>Candidate: ${res.candidate} | Decision: ${res.status} | Best Student: ${res.bestStudent}</p>`;
+      document.getElementById('moulageForm').reset();
+      updateLiveScore();
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+  }
+
+  function saveSetPreference() { localStorage.setItem('tlsm_selected_set', document.getElementById('setSelect').value); }
+</script>
 
 </body>
 </html>
