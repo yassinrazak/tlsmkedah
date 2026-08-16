@@ -400,22 +400,30 @@
   for (let i = 26; i <= 38; i++) { col3.appendChild(createQuestionCard(i)); }
   for (let i = 39; i <= 50; i++) { col4.appendChild(createQuestionCard(i)); }
 
-  // JSONP Engine
-  function jsonpRequest(action, payload) {
-    return new Promise((resolve, reject) => {
-      const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
-      window[callbackName] = function(data) {
-        delete window[callbackName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-        resolve(data);
-      };
-      const script = document.createElement('script');
-      const encodedPayload = encodeURIComponent(JSON.stringify(payload || {}));
-      script.src = `${API_URL}?action=${action}&payload=${encodedPayload}&callback=${callbackName}`;
-      script.onerror = function() { delete window[callbackName]; if (script.parentNode) script.parentNode.removeChild(script); reject(new Error("JSONP Error")); };
-      document.body.appendChild(script);
-    });
-  }
+  // 🌐 JSONP Request Handler: Bypasses CORS and Encodes Payload Safely
+function jsonpRequest(action, payload) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
+    
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data);
+    };
+
+    const script = document.createElement('script');
+    const encodedPayload = encodeURIComponent(JSON.stringify(payload || {}));
+    script.src = `${API_URL}?action=${action}&payload=${encodedPayload}&callback=${callbackName}`;
+    
+    script.onerror = function() {
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error("JSONP Request Failed"));
+    };
+
+    document.body.appendChild(script);
+  });
+}
 
   function apiPost(action, payload) {
     return jsonpRequest(action, payload).catch(err => alert("Connection Error: Unable to connect."));
