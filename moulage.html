@@ -193,7 +193,7 @@
         <div class="form-group"><label for="regUsername">USERNAME</label><input type="text" id="regUsername" placeholder="e.g. abc123" required></div>
         <div class="form-group"><label for="regPassword">SET PASSWORD</label><input type="password" id="regPassword" placeholder="Enter password" required></div>
         <div class="form-group"><label for="regMykad">MYKAD NUMBER</label><input type="text" id="regMykad" placeholder="e.g. 900101025555" required></div>
-        <div class="form-group"><label for="regEmail">EMAIL ADDRESS</label><input type="email" id="regEmail" placeholder="e.g. abc123@moh.gov.my" required></div>
+        <div class="form-group"><label for="regEmail">EMAIL ADDRESS</label><input type="email" id="regEmail" placeholder="e.g. abc123@example.com" required></div>
         <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="registerUser()">REGISTER ACCOUNT</button>
       </form>
       <div class="toggle-link">Already registered? <a onclick="showView('loginView')">Log In Here</a></div>
@@ -219,7 +219,7 @@
     <div class="auth-container">
       <h3 style="text-align: center; color: #1e1b4b; margin-bottom: 16px;">Forgot Password</h3>
       <form id="forgotForm">
-        <div class="form-group"><label for="forgotEmail">REGISTERED EMAIL ADDRESS</label><input type="email" id="forgotEmail" placeholder="e.g. abc123@moh.gov.my" required></div>
+        <div class="form-group"><label for="forgotEmail">REGISTERED EMAIL ADDRESS</label><input type="email" id="forgotEmail" placeholder="e.g. abc123@example.com" required></div>
         <button type="button" class="submit-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" onclick="sendPasswordEmail()">SEND PASSWORD</button>
       </form>
       <div class="toggle-link">Back to <a onclick="showView('loginView')">Log In</a></div>
@@ -354,8 +354,8 @@
 </div>
 
 <script>
-  // 🔗 UPDATED OFFICIAL MOH GOV GOOGLE APPS SCRIPT ENDPOINT
-  const API_URL = "https://script.google.com/a/macros/moh.gov.my/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
+  // 🔗 PUBLIC EXECUTION ENDPOINT (CORS & JSONP SAFE)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxZuhajdf5Pup9DCYCK4iVWpSOCpnY2i_UQy9zGYBcimlMZNO_Ox0y9kfwcvmTOAqS0/exec";
   var currentUser = { username: "", fullName: "" };
 
   function showView(viewId) {
@@ -413,13 +413,17 @@
       const script = document.createElement('script');
       const encodedPayload = encodeURIComponent(JSON.stringify(payload || {}));
       script.src = `${API_URL}?action=${action}&payload=${encodedPayload}&callback=${callbackName}`;
-      script.onerror = function() { delete window[callbackName]; if (script.parentNode) script.parentNode.removeChild(script); reject(new Error("JSONP Error")); };
+      script.onerror = function() { 
+        delete window[callbackName]; 
+        if (script.parentNode) script.parentNode.removeChild(script); 
+        reject(new Error("JSONP Error")); 
+      };
       document.body.appendChild(script);
     });
   }
 
   function apiPost(action, payload) {
-    return jsonpRequest(action, payload).catch(err => alert("Connection Error: Unable to connect to MOH Google database."));
+    return jsonpRequest(action, payload).catch(err => alert("Connection Error: Unable to connect to Google database."));
   }
 
   function registerUser() {
