@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TLSM Moulage Scenario 1 - Interactive Trauma Simulation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .font-mono { font-family: 'JetBrains+Mono', monospace; }
+    .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card-hover:hover { border-color: rgba(59, 130, 246, 0.5); transform: translateY(-2px); transition: all 0.2s ease; }
+    .ecg-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 2.5s linear infinite;
+    }
+    @keyframes dash {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header / Vitals Bar -->
+  <header class="glass-card sticky top-0 z-40 border-b border-slate-800 bg-slate-900/90 backdrop-filter backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="p-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30">
+          <i class="fa-solid fa-truck-medical text-xl"></i>
+        </span>
+        <div>
+          <h1 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+            TLSM Moulage Exam Demo
+            <span class="text-xs font-normal px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Scenario 1</span>
+          </h1>
+          <p class="text-xs text-slate-400">30yo Male • Motorcycle Rear-End Collision (30 mins ago)</p>
+        </div>
+      </div>
+
+      <!-- Live Vitals Display -->
+      <div class="flex items-center gap-4 bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-800 font-mono text-xs">
+        <div class="text-center px-2">
+          <span class="block text-[10px] text-slate-500 uppercase">HR</span>
+          <span class="text-emerald-400 font-bold text-sm" id="vital-hr">110 <span class="text-[10px] text-slate-400">bpm</span></span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div class="text-center px-2">
+          <span class="block text-[10px] text-slate-500 uppercase">BP</span>
+          <span class="text-emerald-400 font-bold text-sm" id="vital-bp">115/75 <span class="text-[10px] text-slate-400">mmHg</span></span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div class="text-center px-2">
+          <span class="block text-[10px] text-slate-500 uppercase">SpO2</span>
+          <span class="text-cyan-400 font-bold text-sm" id="vital-spo2">98% <span class="text-[10px] text-slate-400">RA</span></span>
+        </div>
+        <div class="h-6 w-px bg-slate-800"></div>
+        <div class="text-center px-2">
+          <span class="block text-[10px] text-slate-500 uppercase">GCS</span>
+          <span class="text-amber-400 font-bold text-sm">15 <span class="text-[10px] text-slate-400">E4V5M6</span></span>
+        </div>
+      </div>
+
+      <!-- Action & Score Progress -->
+      <div class="flex items-center gap-3">
+        <div class="text-right text-xs">
+          <span class="text-slate-400 block">Assessment Score</span>
+          <span class="text-blue-400 font-bold text-sm" id="score-counter">0 / 12 Action Points</span>
+        </div>
+        <button onclick="resetSimulation()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- Left Column: Primary & Secondary Assessment Controls (8 Cols) -->
+    <div class="lg:col-span-8 space-y-6">
+
+      <!-- Patient Overview Banner -->
+      <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col sm:flex-row justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-red-500/20 text-red-400 border border-red-500/30">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Major Trauma Call
+              </span>
+              <span class="px-2.5 py-1 text-xs font-semibold rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                Pain Score: 7/10
+              </span>
+            </div>
+            <h2 class="text-xl font-bold text-slate-100">Mechanism of Injury</h2>
+            <p class="text-sm text-slate-300 mt-1">High-speed motorcycle rear-end collision with a car 30 minutes prior to arrival. Presents with severe pain, deformity, and active bleeding over the right lower leg.</p>
+          </div>
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 min-w-[200px]">
+            <span class="text-xs text-slate-400 uppercase font-semibold block mb-1">Pre-Hospital Care</span>
+            <ul class="text-xs text-slate-300 space-y-1">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Cervical Collar Applied</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Non-Rebreather Mask (15L/min)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Full Spinal Board Immobilization</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resuscitation Protocol Tabs -->
+      <div class="flex border-b border-slate-800 space-x-4">
+        <button id="tab-primary-btn" onclick="switchTab('primary')" class="pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition">
+          <i class="fa-solid fa-shield-halved"></i> Primary Survey (&lt;C&gt;ABCDE)
+        </button>
+        <button id="tab-secondary-btn" onclick="switchTab('secondary')" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+          <i class="fa-solid fa-stethoscope"></i> Secondary Survey & Imaging
+        </button>
+      </div>
+
+      <!-- SECTION: PRIMARY SURVEY (<C>ABCDE) -->
+      <div id="tab-primary" class="space-y-4">
+
+        <!-- <C> Catastrophic Hemorrhage -->
+        <div class="glass-card p-4 rounded-xl border-l-4 border-l-red-500">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs">C</span>
+              Catastrophic Hemorrhage Assessment
+            </h3>
+            <button onclick="revealAssessment('c_hem', 1)" class="px-3 py-1 bg-red-600/80 hover:bg-red-500 text-white rounded text-xs transition font-medium">
+              Inspect Patient
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">Check for immediate exsanguinating external hemorrhage upon arrival.</p>
+          <div id="res-c_hem" class="hidden mt-3 p-3 bg-slate-900/80 rounded-lg text-xs border border-slate-800">
+            <p class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Appraisal: No exsanguinating massive arterial spout noted.</p>
+            <p class="text-slate-300 mt-1">Action Triggered: <span class="text-blue-400 font-medium">Trauma Team Activated</span></p>
+          </div>
+        </div>
+
+        <!-- Airway & C-Spine -->
+        <div class="glass-card p-4 rounded-xl border-l-4 border-l-blue-500">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">A</span>
+              Airway & Cervical Spine
+            </h3>
+            <button onclick="revealAssessment('airway', 2)" class="px-3 py-1 bg-blue-600/80 hover:bg-blue-500 text-white rounded text-xs transition font-medium">
+              Assess Airway & Neck
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">Evaluate airway patency, vocalization, and neck integrity under manual C-spine protection.</p>
+          <div id="res-airway" class="hidden mt-3 p-3 bg-slate-900/80 rounded-lg text-xs border border-slate-800 space-y-1">
+            <p class="text-slate-200"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Patient is alert, speaking in full sentences. No stridor or airway obstruction.</p>
+            <p class="text-slate-200"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Neck: No wounds, bruises, or tracheal deviation. C-collar maintained.</p>
+          </div>
+        </div>
+
+        <!-- Breathing & Ventilation -->
+        <div class="glass-card p-4 rounded-xl border-l-4 border-l-cyan-500">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">B</span>
+              Breathing & Ventilation
+            </h3>
+            <button onclick="revealAssessment('breathing', 3)" class="px-3 py-1 bg-cyan-600/80 hover:bg-cyan-500 text-white rounded text-xs transition font-medium">
+              Auscultate & Inspect Chest
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">Inspect, palpate, percuss, and auscultate bilateral lung fields.</p>
+          <div id="res-breathing" class="hidden mt-3 p-3 bg-slate-900/80 rounded-lg text-xs border border-slate-800 grid grid-cols-2 gap-2">
+            <div><span class="text-slate-400">Respiration Rate:</span> <span class="text-slate-200 font-semibold">22 breaths/min</span></div>
+            <div><span class="text-slate-400">Inspection:</span> <span class="text-slate-200">No chest wall deformity/swelling</span></div>
+            <div><span class="text-slate-400">Palpation:</span> <span class="text-slate-200">Chest wall non-tender</span></div>
+            <div><span class="text-slate-400">Auscultation:</span> <span class="text-slate-200">Normal equal air entry bilaterally</span></div>
+            <div><span class="text-slate-400">Percussion:</span> <span class="text-slate-200">Resonant bilaterally</span></div>
+            <div><span class="text-slate-400">Oxygen Sat:</span> <span class="text-emerald-400 font-semibold">99% on room air</span></div>
+          </div>
+        </div>
+
+        <!-- Circulation & Hemorrhage Control -->
+        <div class="glass-card p-4 rounded-xl border-l-4 border-l-amber-500">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">C</span>
+              Circulation & Hemorrhage Control
+            </h3>
+            <button onclick="revealAssessment('circulation', 4)" class="px-3 py-1 bg-amber-600/80 hover:bg-amber-500 text-white rounded text-xs transition font-medium">
+              Assess Circulation & Limb
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">Check perfusion, abdominal/pelvic exam, and examine lower limb bleeding.</p>
+          <div id="res-circulation" class="hidden mt-3 p-3 bg-slate-900/80 rounded-lg text-xs border border-slate-800 space-y-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-2 border-b border-slate-800">
+              <div><span class="text-slate-400">HR / BP:</span> <span class="text-amber-400 font-bold">110 bpm / 114/74 mmHg</span></div>
+              <div><span class="text-slate-400">Skin / CRT:</span> <span class="text-slate-200">Pink, Warm, CRT &lt; 2s</span></div>
+              <div><span class="text-slate-400">Pulses:</span> <span class="text-slate-200">Good pulse volume</span></div>
+              <div><span class="text-slate-400">Abdomen:</span> <span class="text-slate-200">Soft, non-tender</span></div>
+              <div class="col-span-2"><span class="text-red-400 font-semibold">Pelvic Exam:</span> <span class="text-slate-200">No injury detected (*DO NOT PERFORM PELVIC SPRING)</span></div>
+            </div>
+            <div>
+              <p class="font-bold text-amber-400">Right Lower Limb Examination:</p>
+              <p class="text-slate-300 mt-0.5">• Pre-existing bandage is soaked with active blood.</p>
+              <p class="text-slate-300">• Laceration wound over right leg measuring <span class="text-red-400 font-bold">10 x 8 cm</span> with exposed fractured bone and muscle structure.</p>
+            </div>
+            
+            <!-- Interventions Check -->
+            <div class="pt-2 border-t border-slate-800 flex flex-wrap gap-2">
+              <button onclick="performAction('iv')" id="btn-iv" class="px-2.5 py-1 bg-slate-800 hover:bg-blue-600 text-slate-200 rounded text-xs transition">
+                <i class="fa-solid fa-syringe mr-1"></i> Insert 2x 16G IV Cannulas
+              </button>
+              <button onclick="performAction('txa')" id="btn-txa" class="px-2.5 py-1 bg-slate-800 hover:bg-blue-600 text-slate-200 rounded text-xs transition">
+                <i class="fa-solid fa-pills mr-1"></i> Administer IV Tranexamic Acid
+              </button>
+              <button onclick="performAction('bandage')" id="btn-bandage" class="px-2.5 py-1 bg-slate-800 hover:bg-blue-600 text-slate-200 rounded text-xs transition">
+                <i class="fa-solid fa-bandage mr-1"></i> Direct Compression & Dressing
+              </button>
+              <button onclick="performAction('splint')" id="btn-splint" class="px-2.5 py-1 bg-slate-800 hover:bg-blue-600 text-slate-200 rounded text-xs transition">
+                <i class="fa-solid fa-bone mr-1"></i> Splint & Immobilize Limb
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disability & Exposure Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Disability -->
+          <div class="glass-card p-4 rounded-xl border-l-4 border-l-purple-500">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs">D</span>
+                Disability
+              </h3>
+              <button onclick="revealAssessment('disability', 5)" class="px-2.5 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded text-xs transition font-medium">
+                Check Neuro
+              </button>
+            </div>
+            <div id="res-disability" class="hidden text-xs text-slate-300 space-y-1">
+              <p>• GCS 15/15 (E4V5M6), AVPU: Alert</p>
+              <p>• Pupils: Equal 3mm, reactive to light bilaterally</p>
+              <p>• No gross focal neurological deficit</p>
+            </div>
+          </div>
+
+          <!-- Exposure -->
+          <div class="glass-card p-4 rounded-xl border-l-4 border-l-emerald-500">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">E</span>
+                Exposure & Environment
+              </h3>
+              <button onclick="revealAssessment('exposure', 6)" class="px-2.5 py-1 bg-emerald-600/80 hover:bg-emerald-500 text-white rounded text-xs transition font-medium">
+                Expose & Log Roll
+              </button>
+            </div>
+            <div id="res-exposure" class="hidden text-xs text-slate-300 space-y-1">
+              <p>• Superficial abrasions over R knee & R foot</p>
+              <p>• Abrasion extending from R flank to posterior torso</p>
+              <p>• Action: Covered with warm blanket to prevent hypothermia</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECTION: SECONDARY SURVEY & IMAGING -->
+      <div id="tab-secondary" class="hidden space-y-4">
+        <div class="glass-card p-5 rounded-xl border border-slate-800">
+          <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-x-ray text-blue-400"></i> Primary Survey Adjuncts & Diagnostic Workup
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Click below to order and review bedside diagnostic scans during resuscitation.</p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <button onclick="openModal('modal-cxr')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-center text-xs transition">
+              <i class="fa-solid fa-lungs text-blue-400 text-lg mb-1 block"></i>
+              Chest X-Ray (AP)
+            </button>
+            <button onclick="openModal('modal-pelvis')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-center text-xs transition">
+              <i class="fa-solid fa-bone text-emerald-400 text-lg mb-1 block"></i>
+              Pelvis X-Ray
+            </button>
+            <button onclick="openModal('modal-efast')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-center text-xs transition">
+              <i class="fa-solid fa-wave-square text-cyan-400 text-lg mb-1 block"></i>
+              E-FAST Ultrasound
+            </button>
+            <button onclick="openModal('modal-limb')" class="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-center text-xs transition">
+              <i class="fa-solid fa-person-dots-from-line text-amber-400 text-lg mb-1 block"></i>
+              R Leg Limb X-Ray
+            </button>
+          </div>
+        </div>
+
+        <!-- Secondary Interventions & Management Panel -->
+        <div class="glass-card p-5 rounded-xl border border-slate-800 space-y-3">
+          <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wide flex items-center gap-2">
+            <i class="fa-solid fa-prescription-bottle-medical text-emerald-400"></i> Required Medical Management & Interventions
+          </h3>
+          <p class="text-xs text-slate-400">Select management actions performed during the secondary survey:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">Adequate IV Analgesia (Fentanyl/Morphine)</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">Sterile Wound Saline Irrigation</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">Early IV Antibiotics (Open Fracture)</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">IM Anti-Tetanus Toxoid Booster</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">Frequent ABCDE Reassessment</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 bg-slate-900/60 rounded border border-slate-800 cursor-pointer hover:border-slate-700">
+              <input type="checkbox" onchange="toggleSecondaryAction(this)" class="rounded text-blue-600 focus:ring-0">
+              <span class="text-slate-300">Serial Neurovascular Checks (Right Foot)</span>
+            </label>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+            <span class="text-xs font-semibold text-slate-300">Disposition Target:</span>
+            <span class="px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-bold rounded border border-amber-500/30">
+              Urgent Referral to Orthopedics (OR Debridement)
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Patient Moulage Photos & Monitor Widget (4 Cols) -->
+    <div class="lg:col-span-4 space-y-6">
+
+      <!-- Live Clinical Monitor Visualizer -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 bg-black/90">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="text-slate-400 font-mono"><i class="fa-solid fa-heart-pulse text-red-500 mr-1 animate-pulse"></i> LEAD II MONITOR</span>
+          <span class="text-emerald-400 font-mono text-[10px]">SINUS TACHYCARDIA</span>
+        </div>
+        <div class="h-16 w-full overflow-hidden relative flex items-center">
+          <svg class="w-full h-12" viewBox="0 0 500 100" preserveAspectRatio="none">
+            <path class="ecg-line" d="M0,50 L50,50 L60,20 L70,80 L80,50 L120,50 L130,10 L145,90 L160,50 L200,50 L210,20 L220,80 L230,50 L270,50 L280,10 L295,90 L310,50 L350,50 L360,20 L370,80 L380,50 L420,50 L430,10 L445,90 L460,50 L500,50" fill="none" stroke="#10b981" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Wound Moulage Images Card -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-red-400"></i> Clinical Wound Moulage
+          </h3>
+          <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-mono">10 x 8 cm Wound</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+          <div class="relative group rounded-lg overflow-hidden border border-slate-800 cursor-pointer" onclick="openModal('modal-wound')">
+            <img id="img-wound-preview" src="" alt="Right Lower Limb Wound" class="w-full h-44 object-cover group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-2">
+              <span class="text-[11px] text-slate-200"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> View Wound Detail (Exposed Tibia Bone)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-red-950/30 border border-red-800/40 rounded-lg text-xs text-red-200">
+          <p class="font-semibold text-red-300 flex items-center gap-1">
+            <i class="fa-solid fa-triangle-exclamation text-xs"></i> Diagnosis Summary
+          </p>
+          <p class="mt-1 text-[11px] leading-relaxed text-slate-300">
+            Open Gustilo-Anderson Grade III fracture of right tibia & fibula mid-shaft with soft tissue defect and bone protrusion.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Debrief Notes -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 text-xs space-y-2">
+        <h3 class="font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-question text-blue-400"></i> Examiner Debrief Prompt
+        </h3>
+        <p class="text-slate-400">Candidate must summarize the case concisely and explain disposition plan prior to completion.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODALS FOR DIAGNOSTIC IMAGING -->
+
+  <!-- Modal: Chest X-Ray -->
+  <div id="modal-cxr" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
+      <button onclick="closeModal('modal-cxr')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-sm font-bold text-slate-200 mb-2">Image 1: Chest X-Ray (AP View)</h3>
+      <div class="bg-black rounded-lg overflow-hidden flex justify-center max-h-[70vh]">
+        <img id="img-cxr" src="" alt="Chest X-Ray" class="max-h-[65vh] object-contain">
+      </div>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-circle-check mr-1"></i> Finding: No lung collapse, pneumothorax, hemothorax, or rib fractures detected.</p>
+    </div>
+  </div>
+
+  <!-- Modal: Pelvis X-Ray -->
+  <div id="modal-pelvis" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
+      <button onclick="closeModal('modal-pelvis')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-sm font-bold text-slate-200 mb-2">Image 2: Pelvis X-Ray (AP Mobile)</h3>
+      <div class="bg-black rounded-lg overflow-hidden flex justify-center max-h-[70vh]">
+        <img id="img-pelvis" src="" alt="Pelvis X-Ray" class="max-h-[65vh] object-contain">
+      </div>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-circle-check mr-1"></i> Finding: Intact pelvic ring. No fractures or pubic diastasis noted.</p>
+    </div>
+  </div>
+
+  <!-- Modal: EFAST -->
+  <div id="modal-efast" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-3xl w-full p-4 rounded-2xl relative border border-slate-700">
+      <button onclick="closeModal('modal-efast')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-sm font-bold text-slate-200 mb-2">Image 5: EFAST Ultrasound (4 Views)</h3>
+      <div class="grid grid-cols-2 gap-2 bg-black p-2 rounded-lg max-h-[65vh] overflow-y-auto">
+        <div class="text-center">
+          <img id="img-efast1" src="" alt="Right Hypochondriac" class="w-full h-36 object-contain rounded border border-slate-800">
+          <span class="text-[10px] text-slate-400 mt-1 block">Right Hypochondriac (Morison's)</span>
+        </div>
+        <div class="text-center">
+          <img id="img-efast2" src="" alt="Left Hypochondriac" class="w-full h-36 object-contain rounded border border-slate-800">
+          <span class="text-[10px] text-slate-400 mt-1 block">Left Hypochondriac (Splenorenal)</span>
+        </div>
+        <div class="text-center">
+          <img id="img-efast3" src="" alt="Suprapubic" class="w-full h-36 object-contain rounded border border-slate-800">
+          <span class="text-[10px] text-slate-400 mt-1 block">Suprapubic View</span>
+        </div>
+        <div class="text-center">
+          <img id="img-efast4" src="" alt="Subxiphoid" class="w-full h-36 object-contain rounded border border-slate-800">
+          <span class="text-[10px] text-slate-400 mt-1 block">Subxiphoid Cardiac View</span>
+        </div>
+      </div>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-circle-check mr-1"></i> Finding: Negative for intraperitoneal or pericardial free fluid.</p>
+    </div>
+  </div>
+
+  <!-- Modal: Limb X-Ray -->
+  <div id="modal-limb" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
+      <button onclick="closeModal('modal-limb')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-sm font-bold text-slate-200 mb-2">Image 4: Right Lower Limb X-Ray</h3>
+      <div class="grid grid-cols-2 gap-2 bg-black p-2 rounded-lg max-h-[65vh]">
+        <img id="img-limb1" src="" alt="Limb X-Ray View 1" class="w-full h-64 object-contain">
+        <img id="img-limb2" src="" alt="Limb X-Ray View 2" class="w-full h-64 object-contain">
+      </div>
+      <p class="text-xs text-red-400 font-semibold mt-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Finding: Right mid-shaft tibia and fibula fracture with severe displacement and angulation.</p>
+    </div>
+  </div>
+
+  <!-- Modal: Wound Detail -->
+  <div id="modal-wound" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card max-w-3xl w-full p-4 rounded-2xl relative border border-slate-700">
+      <button onclick="closeModal('modal-wound')" class="absolute top-3 right-3 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="text-sm font-bold text-slate-200 mb-2">Image 3: Right Lower Limb Open Wound Moulage</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-black p-2 rounded-lg max-h-[65vh]">
+        <img id="img-wound1" src="" alt="Wound View 1" class="w-full h-64 object-cover rounded">
+        <img id="img-wound2" src="" alt="Wound View 2" class="w-full h-64 object-cover rounded">
+      </div>
+      <p class="text-xs text-amber-300 mt-2"><i class="fa-solid fa-circle-info mr-1"></i> Active laceration measuring 10x8 cm over right lower leg with visibly exposed fracture bone ends and muscle tissue.</p>
+    </div>
+  </div>
+
+  <script>
+    // Embedded Base64 Images extracted directly from Scenario PDF
+    const IMAGES = {
+      cxr: "data:image/jpeg;base64,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
+      pelvis: "data:image/jpeg;base64,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"
+    };
+
+    // Load images into elements
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('img-cxr').src = IMAGES.cxr;
+      document.getElementById('img-pelvis').src = IMAGES.pelvis;
+      document.getElementById('img-efast1').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iih/wBAiFFFFS/MAopv/j/v9f8An9/2aKb23C46ik/4f8f3f/Hqa2/fS+/qA7e38NFP+/TvN3f6pvn/AOfilfz29P6+Y7eXf8f63D+Giiin1/AOi/r/AD/yE/1m2iij+H/vv9/89/50d/67/wCb/DYf3/X4fq/83/kFFFFM36A3/LT/AD/41RRR6f3v0A3a2yik2/e/323f4f8AAad/7NWm2m4/63+/qP8AiX/eqOpG/ir/2k132uT6fkvy8v8AP01m/wA+38qj/uf886KKfT+vl0/rqNbr+un/AAPS43/P5f7P4U2iinoH9fn+H9dh/8a0U3/j/f8A/32iq/iG9w/z602iio+/T8ehmf/Z";
+      document.getElementById('img-efast2').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACUDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3503/4qiiq9b/d2+f8AUh723/r4dPv+4bSfwUUUx/w9bf1+P4fIN38f1+vT0+nr/Khv8/NRRVfzbfp3A/h3UUUU1v1sC/4f0+/+twh/3f8Aedvx/wCBD0+lC/8AAvvf30//AGf50Uf8/d13sK/4/wBX/r/IP/idp3X231//2Q==";
+      document.getElementById('img-efast3').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iii+/mHQKP9pvw/75o/4f/sf4aKfX4gDff3N2ooopbf5AIv3flooo/p/yE3t/L/n4S0UUVX9bfp/Ww0Hf/AGv/ALCik/h3UUunbf8AT+vmJvf+v5v8vw9A/wC2/N/v0UUf8P8A5+v9ehT/AOC/4f6v5/Lof//Z";
+      document.getElementById('img-efast4').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iir+/qHqOooor/L+n+pP930Gf8A2v8A0F/1m2ij/wBmf+f8f/xGnf8AD1389/y8/QOn/Lv+Xn+Pl+Ld/wCR/wDRtH/LP/bX/Pt/m/v7aKf9Pfz/AA6+f/A10On/AG/3v36f52Cnf+O+tFP2Xy6eW/p+S+Yw+9v3bfO/3f4qTb9+iin2/p9fw9PmC/vf53/X+uh//2Q==";
+      
+      // Load wound images
+      document.getElementById('img-wound-preview').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADxAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/A8+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q==";
+      document.getElementById('img-wound1').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADxAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/A8+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q==";
+      document.getElementById('img-wound2').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAL0DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/5/8/NtSN/c+5/6F/8AEUUUbB6/59X6jP4t1N/zf3aKKvoT1H/gefL/AHWbb/95qL/v3839z/39ooot69Rh/DTWooQXf5m3mptFFS9i1ux9I3+e/a/e/e3f+h0UVXf+un9IroG3/Uf/AB7/AGv31O/m/u9aKKmOwf1/XkPpn/s39763v3/p/niiirfQT3+f/B/Ef/e+u3fR/u0UU2HQb/y1301/mb+X/fv+P/Pv43KKl7/MD/2Q==";
+
+      // Load limb X-Ray images
+      document.getElementById('img-limb1').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/A8+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q==";
+      document.getElementById('img-limb2').src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAKQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/A8+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q==";
+    });
+
+    let score = 0;
+    const completedActions = new Set();
+
+    function switchTab(tab) {
+      if (tab === 'primary') {
+        document.getElementById('tab-primary').classList.remove('hidden');
+        document.getElementById('tab-secondary').classList.add('hidden');
+        document.getElementById('tab-primary-btn').className = 'pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition';
+        document.getElementById('tab-secondary-btn').className = 'pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition';
+      } else {
+        document.getElementById('tab-primary').classList.add('hidden');
+        document.getElementById('tab-secondary').classList.remove('hidden');
+        document.getElementById('tab-secondary-btn').className = 'pb-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 flex items-center gap-2 transition';
+        document.getElementById('tab-primary-btn').className = 'pb-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition';
+      }
+    }
+
+    function revealAssessment(id, pointVal) {
+      const el = document.getElementById(`res-${id}`);
+      if (el && el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        if (!completedActions.has(id)) {
+          completedActions.add(id);
+          score += 1;
+          updateScore();
+        }
+      }
+    }
+
+    function performAction(actionId) {
+      const btn = document.getElementById(`btn-${actionId}`);
+      if (btn && !completedActions.has(actionId)) {
+        completedActions.add(actionId);
+        btn.classList.remove('bg-slate-800', 'hover:bg-blue-600', 'text-slate-200');
+        btn.classList.add('bg-emerald-600', 'text-white');
+        btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Action Completed`;
+        score += 1;
+        updateScore();
+      }
+    }
+
+    function toggleSecondaryAction(checkbox) {
+      if (checkbox.checked) {
+        score += 1;
+      } else {
+        score = Math.max(0, score - 1);
+      }
+      updateScore();
+    }
+
+    function updateScore() {
+      document.getElementById('score-counter').innerText = `${score} / 12 Action Points`;
+    }
+
+    function resetSimulation() {
+      completedActions.clear();
+      score = 0;
+      updateScore();
+
+      ['c_hem', 'airway', 'breathing', 'circulation', 'disability', 'exposure'].forEach(id => {
+        const el = document.getElementById(`res-${id}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      ['iv', 'txa', 'bandage', 'splint'].forEach(act => {
+        const btn = document.getElementById(`btn-${act}`);
+        if (btn) {
+          btn.className = 'px-2.5 py-1 bg-slate-800 hover:bg-blue-600 text-slate-200 rounded text-xs transition';
+          if (act === 'iv') btn.innerHTML = `<i class="fa-solid fa-syringe mr-1"></i> Insert 2x 16G IV Cannulas`;
+          if (act === 'txa') btn.innerHTML = `<i class="fa-solid fa-pills mr-1"></i> Administer IV Tranexamic Acid`;
+          if (act === 'bandage') btn.innerHTML = `<i class="fa-solid fa-bandage mr-1"></i> Direct Compression & Dressing`;
+          if (act === 'splint') btn.innerHTML = `<i class="fa-solid fa-bone mr-1"></i> Splint & Immobilize Limb`;
+        }
+      });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
