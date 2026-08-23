@@ -15,11 +15,11 @@
     /* Screen Blinking Animations (3 Blinks) */
     @keyframes blinkYellow {
       0%, 100% { background-color: #0f172a; }
-      16%, 50%, 83% { background-color: rgba(234, 179, 8, 0.6); }
+      16%, 50%, 83% { background-color: rgba(234, 179, 8, 0.65); }
     }
     @keyframes blinkRed {
       0%, 100% { background-color: #0f172a; }
-      16%, 50%, 83% { background-color: rgba(239, 68, 68, 0.7); }
+      16%, 50%, 83% { background-color: rgba(239, 68, 68, 0.75); }
     }
     .flash-yellow { animation: blinkYellow 2.4s ease-in-out; }
     .flash-red { animation: blinkRed 2.4s ease-in-out; }
@@ -34,7 +34,7 @@
 </head>
 <body id="app-body" class="min-h-screen flex flex-col transition-colors duration-300">
 
-  <!-- Top Header & Controls -->
+  <!-- Top Header Bar -->
   <header class="glass-card sticky top-0 z-40 border-b border-slate-800 bg-slate-900/90 backdrop-blur-lg">
     <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
       
@@ -57,9 +57,9 @@
         <i class="fa-solid fa-user text-xs text-blue-400"></i>
         <label for="candidate-select" class="text-xs text-slate-400 font-medium">Participant:</label>
         <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer max-w-[200px]">
-          <option value="" class="bg-slate-900 text-slate-400">Loading from Sheet...</option>
+          <option value="" class="bg-slate-900 text-slate-400">-- Loading Sheet --</option>
         </select>
-        <button onclick="fetchCandidatesFromSheet()" title="Reload from Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
+        <button onclick="fetchCandidates()" title="Sync with Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
@@ -86,28 +86,28 @@
           <span class="text-[10px] text-slate-400 uppercase block font-medium">Total Marks</span>
           <span id="total-score-display" class="text-lg font-bold font-mono text-blue-400">0 / 12</span>
         </div>
-        <button onclick="submitMarks()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-check-double"></i>
-          <span>Finalize Marks</span>
+        <button onclick="submitToSheet()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Submit to Sheet</span>
         </button>
       </div>
 
     </div>
   </header>
 
-  <!-- Google Sheet Sync Bar -->
+  <!-- Google Sheet Script Sync Bar -->
   <div class="bg-slate-900/80 border-b border-slate-800 px-4 py-2 text-xs">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-slate-300 flex-1 min-w-[300px]">
-        <i class="fa-solid fa-table text-emerald-400 text-sm"></i>
-        <span class="font-semibold text-slate-200">Linked Google Sheet:</span>
-        <input type="text" id="sheet-url-input" value="https://docs.google.com/spreadsheets/d/19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg/edit?gid=0#gid=0" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
-        <button onclick="fetchCandidatesFromSheet()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition flex items-center gap-1">
-          <i class="fa-solid fa-sync text-[10px]"></i> Sync Names
+      <div class="flex items-center gap-2 text-slate-300 flex-1 min-w-[320px]">
+        <i class="fa-solid fa-link text-emerald-400 text-sm"></i>
+        <span class="font-semibold text-slate-200">Google Sheet Deployment URL:</span>
+        <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/AKfycbw2SM7f_-f2bwHFL1gR_Wu49AVfE_UFuS0w_7OB17I5ID8ho5HaOIac5f-xmBONXj4/exec" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
+        <button onclick="fetchCandidates()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition flex items-center gap-1">
+          <i class="fa-solid fa-sync text-[10px]"></i> Connect
         </button>
       </div>
       <span class="text-[11px] text-slate-400">
-        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Participants fetched automatically from Column A of your Google Sheet.
+        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Connects to Sheet <code>19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg</code> for reading & saving marks.
       </span>
     </div>
   </div>
@@ -139,7 +139,7 @@
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
           <i class="fa-solid fa-list-check text-blue-400"></i> Examiner Assessment Checklist
         </h3>
-        <span class="text-xs text-slate-400">Check item when participant performs/verbalizes action</span>
+        <span class="text-xs text-slate-400">Mark item as participant performs or verbalizes action</span>
       </div>
 
       <!-- Checklist Items -->
@@ -193,7 +193,7 @@
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Large-Bore Vascular Access & Fluids</span>
+              <span class="text-xs font-bold text-slate-200 block">Large-Bore Vascular Access & Warm Fluids</span>
               <span class="text-xs text-slate-400">Verbalizes insertion of 2x large-bore IV cannulas (16G or larger) & warm IV crystalloids[cite: 1].</span>
             </div>
           </div>
@@ -405,7 +405,7 @@
   </div>
 
   <script>
-    // Base64 Images
+    // Embedded Base64 Images
     const IMAGES = {
       cxr: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAMQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iilfUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
       pelvis: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iifUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
@@ -430,77 +430,99 @@
       document.getElementById('img-limb1').src = IMAGES.limb;
       document.getElementById('img-limb2').src = IMAGES.limb;
 
-      // Automatically fetch candidate names from your Google Sheet on page load
-      fetchCandidatesFromSheet();
+      // Restore saved Apps Script Web App URL from localStorage
+      const savedScriptUrl = localStorage.getItem('tlsm_apps_script_url');
+      if (savedScriptUrl) {
+        document.getElementById('script-url-input').value = savedScriptUrl;
+        fetchCandidates();
+      }
     });
 
     /* ========================================================
-       GOOGLE SHEET AUTOMATIC FETCH
-       Target Sheet: 19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg
+       READ & WRITE GOOGLE SHEET VIA APPS SCRIPT
     ======================================================== */
-    async function fetchCandidatesFromSheet() {
-      const input = document.getElementById('sheet-url-input').value.trim();
-      const select = document.getElementById('candidate-select');
-      
-      let sheetId = "19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg";
-      const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (match && match[1]) {
-        sheetId = match[1];
+    async function fetchCandidates() {
+      const scriptUrl = document.getElementById('script-url-input').value.trim();
+      if (!scriptUrl) {
+        alert("Please paste your Google Apps Script Web App URL into the box above!");
+        return;
       }
 
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
+      localStorage.setItem('tlsm_apps_script_url', scriptUrl);
 
       try {
-        const response = await fetch(csvUrl);
-        if (!response.ok) throw new Error("Could not access Google Sheet");
-        const csvText = await response.text();
+        const response = await fetch(scriptUrl);
+        const data = await response.json();
 
-        // Extract Column A entries
-        const rows = csvText.split('\n').map(r => r.split(',')[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
-        
-        // Filter out table headers
-        const names = rows.filter(name => !['name', 'participant', 'candidate', 'student name', 'participants', 'candidates', 'no', 'bil', 'nama'].includes(name.toLowerCase()));
-
-        select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
-        
-        if (names.length === 0) {
-          populateDefaultCandidates();
-          return;
+        if (data && data.participants && data.participants.length > 0) {
+          const select = document.getElementById('candidate-select');
+          select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
+          data.participants.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            opt.className = 'bg-slate-900';
+            select.appendChild(opt);
+          });
+          alert(`✅ Loaded ${data.participants.length} participants directly from Google Sheet!`);
+        } else {
+          alert("Connected to Google Sheet, but no participant names were found in Column A.");
         }
-
-        names.forEach(name => {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          opt.className = 'bg-slate-900';
-          select.appendChild(opt);
-        });
-
       } catch (err) {
-        console.warn("Sheet fetch error, using defaults:", err);
-        populateDefaultCandidates();
+        console.error("Fetch error:", err);
+        alert("Unable to fetch participant names. Make sure you deployed your Apps Script as 'Web App' with access set to 'Anyone'.");
       }
     }
 
-    function populateDefaultCandidates() {
-      const defaults = ["Dr. Ahmad Razak", "Dr. Siti Sarah", "Dr. Kenneth Wong", "Dr. Priya Nambiar"];
-      const select = document.getElementById('candidate-select');
-      select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
-      defaults.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        opt.className = 'bg-slate-900';
-        select.appendChild(opt);
-      });
+    async function submitToSheet() {
+      const candidate = document.getElementById('candidate-select').value;
+      if (!candidate) {
+        alert("Please select a participant name first!");
+        return;
+      }
+
+      const scriptUrl = document.getElementById('script-url-input').value.trim();
+      if (!scriptUrl) {
+        alert("Please paste your Google Apps Script Web App URL in the top bar to enable score submission!");
+        return;
+      }
+
+      const scoreData = calculateScore();
+      const elapsedMins = Math.floor((timerDuration - secondsRemaining) / 60);
+      const elapsedSecs = (timerDuration - secondsRemaining) % 60;
+      const timeSpent = `${elapsedMins}m ${elapsedSecs}s`;
+      const percentage = Math.round((scoreData.score / scoreData.max) * 100);
+      const status = scoreData.score >= 9 ? 'PASSED' : 'FAILED';
+
+      const payload = {
+        participant: candidate,
+        score: scoreData.score,
+        total: scoreData.max,
+        percentage: percentage,
+        status: status,
+        timeElapsed: timeSpent
+      };
+
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        alert(`✅ Score of ${scoreData.score}/${scoreData.max} (${percentage}%) for ${candidate} submitted to Google Sheet successfully!`);
+      } catch (err) {
+        console.error("Submit error:", err);
+        alert("Failed to submit score to Google Sheet. Check internet connection.");
+      }
     }
 
     /* ========================================================
        15-MINUTE TIMER & SCREEN BLINKING LOGIC
-       - Minute 7 elapsed (420s): Flash Yellow 3x
-       - Minute 10 elapsed (600s): Flash Red 3x
+       - Minute 7 elapsed (420s elapsed): Screen blinks yellow 3x
+       - Minute 10 elapsed (600s elapsed): Screen blinks red 3x
     ======================================================== */
-    let timerDuration = 15 * 60;
+    let timerDuration = 15 * 60; // 900 seconds
     let secondsRemaining = timerDuration;
     let timerInterval = null;
     let isTimerRunning = false;
@@ -546,7 +568,7 @@
           isTimerRunning = false;
           secondsRemaining = 0;
           updateTimerDisplay();
-          alert("⏰ EXAM TIME EXPIRED! Please finalize candidate evaluation.");
+          alert("⏰ EXAM TIME EXPIRED! Please calculate total score and finalize candidate evaluation.");
         }
       }, 1000);
     }
@@ -625,33 +647,7 @@
       return { score: currentScore, max: totalPossible };
     }
 
-    /* ========================================================
-       SUBMIT & EVALUATION RESULT
-    ======================================================== */
-    function submitMarks() {
-      const candidate = document.getElementById('candidate-select').value;
-      if (!candidate) {
-        alert("Please select a participant name first!");
-        return;
-      }
-
-      const scoreData = calculateScore();
-      const elapsedMins = Math.floor((timerDuration - secondsRemaining) / 60);
-      const elapsedSecs = (timerDuration - secondsRemaining) % 60;
-      const timeSpent = `${elapsedMins}m ${elapsedSecs}s`;
-      const percentage = Math.round((scoreData.score / scoreData.max) * 100);
-
-      const summaryText = `📋 ASSESSMENT EVALUATION SUMMARY:\n\n` +
-                          `Participant: ${candidate}\n` +
-                          `Final Score: ${scoreData.score} / ${scoreData.max} (${percentage}%)\n` +
-                          `Result: ${scoreData.score >= 9 ? 'PASSED' : 'FAILED'}\n` +
-                          `Time Elapsed: ${timeSpent}\n` +
-                          `Date: ${new Date().toLocaleString()}`;
-
-      alert(summaryText);
-    }
-
-    // Modal Controls
+    // Modal controls
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
