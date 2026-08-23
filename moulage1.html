@@ -15,11 +15,11 @@
     /* Screen Blinking Animations (3 Blinks) */
     @keyframes blinkYellow {
       0%, 100% { background-color: #0f172a; }
-      16%, 50%, 83% { background-color: rgba(234, 179, 8, 0.45); }
+      16%, 50%, 83% { background-color: rgba(234, 179, 8, 0.6); }
     }
     @keyframes blinkRed {
       0%, 100% { background-color: #0f172a; }
-      16%, 50%, 83% { background-color: rgba(239, 68, 68, 0.55); }
+      16%, 50%, 83% { background-color: rgba(239, 68, 68, 0.7); }
     }
     .flash-yellow { animation: blinkYellow 2.4s ease-in-out; }
     .flash-red { animation: blinkRed 2.4s ease-in-out; }
@@ -56,8 +56,8 @@
       <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800">
         <i class="fa-solid fa-user text-xs text-blue-400"></i>
         <label for="candidate-select" class="text-xs text-slate-400 font-medium">Participant:</label>
-        <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer max-w-[180px]">
-          <option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>
+        <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer max-w-[200px]">
+          <option value="" class="bg-slate-900 text-slate-400">Loading from Sheet...</option>
         </select>
         <button onclick="fetchCandidatesFromSheet()" title="Reload from Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
           <i class="fa-solid fa-arrows-rotate"></i>
@@ -87,27 +87,27 @@
           <span id="total-score-display" class="text-lg font-bold font-mono text-blue-400">0 / 12</span>
         </div>
         <button onclick="submitMarks()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span>Submit Marks</span>
+          <i class="fa-solid fa-check-double"></i>
+          <span>Finalize Marks</span>
         </button>
       </div>
 
     </div>
   </header>
 
-  <!-- Direct Google Sheet Link Setup Bar -->
+  <!-- Google Sheet Sync Bar -->
   <div class="bg-slate-900/80 border-b border-slate-800 px-4 py-2 text-xs">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2 text-slate-300 flex-1 min-w-[300px]">
-        <i class="fa-solid fa-file-csv text-emerald-400 text-sm"></i>
-        <span class="font-semibold text-slate-200">Google Sheet URL / ID:</span>
-        <input type="text" id="sheet-url-input" placeholder="19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
-        <button onclick="fetchCandidatesFromSheet()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition">
-          Load Names
+        <i class="fa-solid fa-table text-emerald-400 text-sm"></i>
+        <span class="font-semibold text-slate-200">Linked Google Sheet:</span>
+        <input type="text" id="sheet-url-input" value="https://docs.google.com/spreadsheets/d/19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg/edit?gid=0#gid=0" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
+        <button onclick="fetchCandidatesFromSheet()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition flex items-center gap-1">
+          <i class="fa-solid fa-sync text-[10px]"></i> Sync Names
         </button>
       </div>
       <span class="text-[11px] text-slate-400">
-        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Ensure Sheet is set to <b>"Anyone with the link can view"</b>. Reads participant names directly from Column A.
+        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Participants fetched automatically from Column A of your Google Sheet.
       </span>
     </div>
   </div>
@@ -125,7 +125,7 @@
             30yo Male • Rear-End Motorcycle Collision[cite: 1]
             <span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-semibold">Pain 7/10[cite: 1]</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Pre-Hospital: C-Collar & Spinal Board Applied, 15L/min NRBM[cite: 1].</p>
+          <p class="text-xs text-slate-400 mt-0.5">Pre-Hospital: Cervical Collar, Spinal Board, NRBM 15L/min[cite: 1].</p>
         </div>
         <div class="flex items-center gap-2.5 font-mono text-xs">
           <span class="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800 text-emerald-400">HR: 110 bpm[cite: 1]</span>
@@ -137,15 +137,14 @@
       <!-- Checklist Section Header -->
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-list-check text-blue-400"></i> Examiner Marking Checklist
+          <i class="fa-solid fa-list-check text-blue-400"></i> Examiner Assessment Checklist
         </h3>
-        <span class="text-xs text-slate-400">Mark items as participant performs/verbalizes actions</span>
+        <span class="text-xs text-slate-400">Check item when participant performs/verbalizes action</span>
       </div>
 
       <!-- Checklist Items -->
       <div id="checklist-container" class="space-y-2.5">
 
-        <!-- 1 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
@@ -157,79 +156,72 @@
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 2 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Airway Patency & Cervical Spine Immobilization</span>
-              <span class="text-xs text-slate-400">Assesses speech, checks neck for wounds/deviation, maintains C-collar protection[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Airway Patency & Cervical Spine Protection</span>
+              <span class="text-xs text-slate-400">Assesses speech, checks neck for injuries/deviation, ensures C-collar immobilization[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 3 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Breathing & Chest Wall Assessment</span>
+              <span class="text-xs font-bold text-slate-200 block">Breathing & Chest Wall Examination</span>
               <span class="text-xs text-slate-400">Inspects, palpates, percusses, auscultates chest bilaterally & verifies SpO2 (22/min, 99%)[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 4 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Circulation & Perfusion Assessment</span>
-              <span class="text-xs text-slate-400">Checks skin color/temp, CRT (&lt;2s), pulses, abdomen, and pelvic exam (*DO NOT SPRING)[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Circulation Assessment (*DO NOT PERFORM PELVIC SPRING)</span>
+              <span class="text-xs text-slate-400">Checks skin color/temp, CRT (&lt;2s), pulse volume, abdomen, and pelvic exam without spring test[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 5 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Large-Bore Vascular Access</span>
-              <span class="text-xs text-slate-400">Verbalizes insertion of 2x large bore IV cannulas (16G or larger) & warm IV crystalloids[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Large-Bore Vascular Access & Fluids</span>
+              <span class="text-xs text-slate-400">Verbalizes insertion of 2x large-bore IV cannulas (16G or larger) & warm IV crystalloids[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 6 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Active Hemorrhage Control & IV Tranexamic Acid</span>
-              <span class="text-xs text-slate-400">Applies direct pressure/dressing to 10x8cm wound & orders IV TXA[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Hemorrhage Control & IV Tranexamic Acid</span>
+              <span class="text-xs text-slate-400">Applies direct pressure/dressing to 10x8cm wound & orders IV Tranexamic acid[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 7 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Fracture Splinting & Limb Immobilization</span>
+              <span class="text-xs font-bold text-slate-200 block">Limb Splinting & Immobilization</span>
               <span class="text-xs text-slate-400">Immobilizes and splints open right tibia/fibula fracture appropriately[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 8 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
@@ -241,19 +233,17 @@
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 9 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Exposure & Environmental Control</span>
+              <span class="text-xs font-bold text-slate-200 block">Exposure & Hypothermia Prevention</span>
               <span class="text-xs text-slate-400">Exposes fully (notes flank/torso abrasions), performs log roll, applies warm blanket[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 10 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
@@ -265,19 +255,17 @@
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 11 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Secondary Survey Interventions</span>
+              <span class="text-xs font-bold text-slate-200 block">Secondary Survey Management</span>
               <span class="text-xs text-slate-400">Orders IV analgesia, wound saline irrigation, early IV antibiotics, & IM anti-tetanus[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- 12 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
             <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
@@ -388,7 +376,7 @@
         <img id="img-efast3" src="" class="w-full h-32 object-contain rounded border border-slate-800">
         <img id="img-efast4" src="" class="w-full h-32 object-contain rounded border border-slate-800">
       </div>
-      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Negative for free fluid[cite: 1].</p>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Negative for intraperitoneal/pericardial free fluid[cite: 1].</p>
     </div>
   </div>
 
@@ -417,7 +405,7 @@
   </div>
 
   <script>
-    // Scenario Diagnostic Base64 Images
+    // Base64 Images
     const IMAGES = {
       cxr: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAMQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iilfUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
       pelvis: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iifUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
@@ -442,61 +430,44 @@
       document.getElementById('img-limb1').src = IMAGES.limb;
       document.getElementById('img-limb2').src = IMAGES.limb;
 
-      // Restore saved Sheet URL from LocalStorage if available
-      const savedSheetUrl = localStorage.getItem('tlsm_google_sheet_url');
-      if (savedSheetUrl) {
-        document.getElementById('sheet-url-input').value = savedSheetUrl;
-        fetchCandidatesFromSheet();
-      } else {
-        // Fallback default candidates if no Google Sheet is supplied yet
-        populateDefaultCandidates();
-      }
+      // Automatically fetch candidate names from your Google Sheet on page load
+      fetchCandidatesFromSheet();
     });
 
     /* ========================================================
-       GOOGLE SHEET DIRECT CSV INTEGRATION
-       Reads Participant Names directly from Column A of Google Sheet
-       (Requires Sheet to be "Anyone with the link can view")
+       GOOGLE SHEET AUTOMATIC FETCH
+       Target Sheet: 19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg
     ======================================================== */
     async function fetchCandidatesFromSheet() {
       const input = document.getElementById('sheet-url-input').value.trim();
-      if (!input) {
-        alert("Please paste your Google Sheet URL or Sheet ID first!");
-        return;
-      }
-
-      // Extract Sheet ID from URL if full URL is pasted
-      let sheetId = input;
+      const select = document.getElementById('candidate-select');
+      
+      let sheetId = "19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg";
       const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
       if (match && match[1]) {
         sheetId = match[1];
       }
 
-      // Save to localStorage
-      localStorage.setItem('tlsm_google_sheet_url', input);
-
-      // Google Sheet CSV Export Endpoint
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
 
       try {
         const response = await fetch(csvUrl);
-        if (!response.ok) throw new Error("Sheet response not OK");
+        if (!response.ok) throw new Error("Could not access Google Sheet");
         const csvText = await response.text();
 
-        // Parse CSV to get names from Column A
+        // Extract Column A entries
         const rows = csvText.split('\n').map(r => r.split(',')[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
         
-        // Exclude common header names
-        const names = rows.filter(name => !['name', 'participant', 'candidate', 'student name', 'participants', 'candidates'].includes(name.toLowerCase()));
+        // Filter out table headers
+        const names = rows.filter(name => !['name', 'participant', 'candidate', 'student name', 'participants', 'candidates', 'no', 'bil', 'nama'].includes(name.toLowerCase()));
 
+        select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
+        
         if (names.length === 0) {
-          alert("No participant names found in Column A. Please check your sheet!");
+          populateDefaultCandidates();
           return;
         }
 
-        // Populate Dropdown
-        const select = document.getElementById('candidate-select');
-        select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
         names.forEach(name => {
           const opt = document.createElement('option');
           opt.value = name;
@@ -505,10 +476,9 @@
           select.appendChild(opt);
         });
 
-        alert(`✅ Successfully loaded ${names.length} participants directly from Google Sheet!`);
       } catch (err) {
-        console.error("Fetch error:", err);
-        alert("Unable to load Google Sheet. Make sure the Google Sheet sharing permission is set to 'Anyone with the link can view'.");
+        console.warn("Sheet fetch error, using defaults:", err);
+        populateDefaultCandidates();
       }
     }
 
@@ -527,10 +497,10 @@
 
     /* ========================================================
        15-MINUTE TIMER & SCREEN BLINKING LOGIC
-       - Elapsed 7 minutes (420s / 8 min left) -> Blinks Yellow 3x
-       - Elapsed 10 minutes (600s / 5 min left) -> Blinks Red 3x
+       - Minute 7 elapsed (420s): Flash Yellow 3x
+       - Minute 10 elapsed (600s): Flash Red 3x
     ======================================================== */
-    let timerDuration = 15 * 60; // 900 seconds
+    let timerDuration = 15 * 60;
     let secondsRemaining = timerDuration;
     let timerInterval = null;
     let isTimerRunning = false;
@@ -558,13 +528,13 @@
 
         const elapsedSeconds = timerDuration - secondsRemaining;
 
-        // 7th Minute Elapsed Alert (420s elapsed / 480s remaining)
+        // 7th Minute Alert (420s elapsed)
         if (elapsedSeconds >= 7 * 60 && !flashed7Min) {
           flashed7Min = true;
           triggerScreenBlink('yellow');
         }
 
-        // 10th Minute Elapsed Alert (600s elapsed / 300s remaining)
+        // 10th Minute Alert (600s elapsed)
         if (elapsedSeconds >= 10 * 60 && !flashed10Min) {
           flashed10Min = true;
           triggerScreenBlink('red');
@@ -576,7 +546,7 @@
           isTimerRunning = false;
           secondsRemaining = 0;
           updateTimerDisplay();
-          alert("⏰ EXAM TIME EXPIRED! Please calculate total score and finalize candidate evaluation.");
+          alert("⏰ EXAM TIME EXPIRED! Please finalize candidate evaluation.");
         }
       }, 1000);
     }
@@ -623,7 +593,7 @@
       body.classList.add(className);
       setTimeout(() => {
         body.classList.remove(className);
-      }, 2500); // Duration for 3 blinks
+      }, 2500);
     }
 
     /* ========================================================
@@ -656,7 +626,7 @@
     }
 
     /* ========================================================
-       SUBMIT & EXPORT MARKS
+       SUBMIT & EVALUATION RESULT
     ======================================================== */
     function submitMarks() {
       const candidate = document.getElementById('candidate-select').value;
@@ -671,17 +641,17 @@
       const timeSpent = `${elapsedMins}m ${elapsedSecs}s`;
       const percentage = Math.round((scoreData.score / scoreData.max) * 100);
 
-      const summaryText = `📋 ASSESSMENT SUBMISSION SUMMARY:\n\n` +
+      const summaryText = `📋 ASSESSMENT EVALUATION SUMMARY:\n\n` +
                           `Participant: ${candidate}\n` +
                           `Final Score: ${scoreData.score} / ${scoreData.max} (${percentage}%)\n` +
-                          `Status: ${scoreData.score >= 9 ? 'PASSED' : 'FAILED'}\n` +
+                          `Result: ${scoreData.score >= 9 ? 'PASSED' : 'FAILED'}\n` +
                           `Time Elapsed: ${timeSpent}\n` +
                           `Date: ${new Date().toLocaleString()}`;
 
       alert(summaryText);
     }
 
-    // Modal controls
+    // Modal Controls
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
