@@ -12,17 +12,17 @@
     .font-mono { font-family: 'JetBrains+Mono', monospace; }
     .glass-card { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     
-    /* Screen Blinking Animations */
+    /* Screen Blinking Animations (3 Blinks) */
     @keyframes blinkYellow {
-      0%, 100% { background-color: transparent; }
-      50% { background-color: rgba(234, 179, 8, 0.35); }
+      0%, 100% { background-color: #0f172a; }
+      16%, 50%, 83% { background-color: rgba(234, 179, 8, 0.45); }
     }
     @keyframes blinkRed {
-      0%, 100% { background-color: transparent; }
-      50% { background-color: rgba(239, 68, 68, 0.45); }
+      0%, 100% { background-color: #0f172a; }
+      16%, 50%, 83% { background-color: rgba(239, 68, 68, 0.55); }
     }
-    .flash-yellow { animation: blinkYellow 0.8s ease-in-out 3; }
-    .flash-red { animation: blinkRed 0.8s ease-in-out 3; }
+    .flash-yellow { animation: blinkYellow 2.4s ease-in-out; }
+    .flash-red { animation: blinkRed 2.4s ease-in-out; }
 
     .ecg-line {
       stroke-dasharray: 1000;
@@ -34,11 +34,11 @@
 </head>
 <body id="app-body" class="min-h-screen flex flex-col transition-colors duration-300">
 
-  <!-- Top Header & Exam Control Bar -->
+  <!-- Top Header & Controls -->
   <header class="glass-card sticky top-0 z-40 border-b border-slate-800 bg-slate-900/90 backdrop-blur-lg">
     <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
       
-      <!-- Scenario Title -->
+      <!-- Title -->
       <div class="flex items-center gap-3">
         <span class="p-2.5 bg-red-500/20 text-red-400 rounded-xl border border-red-500/30">
           <i class="fa-solid fa-user-doctor text-xl"></i>
@@ -48,20 +48,16 @@
             TLSM Examiner Portal
             <span class="text-xs font-normal px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Scenario 1</span>
           </h1>
-          <p class="text-xs text-slate-400">Open Tibia/Fibula Fracture Moulage Exam</p>
+          <p class="text-xs text-slate-400">Open Tibia/Fibula Fracture Moulage Exam[cite: 1]</p>
         </div>
       </div>
 
-      <!-- Candidate Selection Dropdown -->
+      <!-- Candidate Selector Dropdown -->
       <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800">
         <i class="fa-solid fa-user text-xs text-blue-400"></i>
-        <label for="candidate-select" class="text-xs text-slate-400 font-medium">Candidate:</label>
-        <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer">
-          <option value="" class="bg-slate-900 text-slate-300">-- Select Participant --</option>
-          <option value="Dr. Ahmad Razak" class="bg-slate-900">Dr. Ahmad Razak</option>
-          <option value="Dr. Siti Sarah" class="bg-slate-900">Dr. Siti Sarah</option>
-          <option value="Dr. Kenneth Wong" class="bg-slate-900">Dr. Kenneth Wong</option>
-          <option value="Dr. Priya Nambiar" class="bg-slate-900">Dr. Priya Nambiar</option>
+        <label for="candidate-select" class="text-xs text-slate-400 font-medium">Participant:</label>
+        <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer max-w-[180px]">
+          <option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>
         </select>
         <button onclick="fetchCandidatesFromSheet()" title="Reload from Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
           <i class="fa-solid fa-arrows-rotate"></i>
@@ -72,22 +68,25 @@
       <div class="flex items-center gap-3 bg-slate-950/90 px-4 py-2 rounded-xl border border-slate-800 font-mono">
         <i class="fa-solid fa-stopwatch text-amber-400"></i>
         <div>
-          <span class="text-[10px] text-slate-500 uppercase block leading-none">Exam Timer</span>
+          <span class="text-[10px] text-slate-500 uppercase block leading-none">Timer</span>
           <span id="timer-display" class="text-lg font-bold text-emerald-400">15:00</span>
         </div>
         <button id="timer-btn" onclick="toggleTimer()" class="ml-2 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-sans font-medium transition flex items-center gap-1">
           <i id="timer-btn-icon" class="fa-solid fa-play"></i>
           <span id="timer-btn-text">Start</span>
         </button>
+        <button onclick="resetTimer()" title="Reset Timer" class="text-slate-400 hover:text-slate-200 text-xs px-1">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
       </div>
 
       <!-- Total Score & Submit -->
       <div class="flex items-center gap-3">
         <div class="text-right">
-          <span class="text-[10px] text-slate-400 uppercase block font-medium">Total Score</span>
+          <span class="text-[10px] text-slate-400 uppercase block font-medium">Total Marks</span>
           <span id="total-score-display" class="text-lg font-bold font-mono text-blue-400">0 / 12</span>
         </div>
-        <button onclick="submitToGoogleSheet()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
+        <button onclick="submitMarks()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
           <i class="fa-solid fa-cloud-arrow-up"></i>
           <span>Submit Marks</span>
         </button>
@@ -96,190 +95,195 @@
     </div>
   </header>
 
-  <!-- Google Sheet Configuration Bar -->
-  <div class="bg-slate-900/60 border-b border-slate-800/80 px-4 py-2 text-xs">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2 text-slate-400">
-        <i class="fa-solid fa-table text-emerald-400"></i>
-        <span>Google Apps Script Endpoint:</span>
-        <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/AKfycbw2SM7f_-f2bwHFL1gR_Wu49AVfE_UFuS0w_7OB17I5ID8ho5HaOIac5f-xmBONXj4/exec" class="bg-slate-950 border border-slate-800 text-slate-200 px-2 py-1 rounded w-80 text-xs focus:outline-none focus:border-blue-500">
+  <!-- Direct Google Sheet Link Setup Bar -->
+  <div class="bg-slate-900/80 border-b border-slate-800 px-4 py-2 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-slate-300 flex-1 min-w-[300px]">
+        <i class="fa-solid fa-file-csv text-emerald-400 text-sm"></i>
+        <span class="font-semibold text-slate-200">Google Sheet URL / ID:</span>
+        <input type="text" id="sheet-url-input" placeholder="19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
+        <button onclick="fetchCandidatesFromSheet()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition">
+          Load Names
+        </button>
       </div>
-      <span class="text-[11px] text-slate-500"><i class="fa-solid fa-circle-info mr-1"></i>Links participant dropdown & auto-submits scored checklists directly to Google Sheets.</span>
+      <span class="text-[11px] text-slate-400">
+        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Ensure Sheet is set to <b>"Anyone with the link can view"</b>. Reads participant names directly from Column A.
+      </span>
     </div>
   </div>
 
   <!-- Main Grid Layout -->
   <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- Left Panel: Examiner Checklist & Point Weighting (8 Cols) -->
+    <!-- Left Panel: Marking Checklist (8 Cols) -->
     <div class="lg:col-span-8 space-y-5">
 
       <!-- Patient Vitals Summary -->
       <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 border border-slate-800">
         <div>
           <h2 class="text-sm font-bold text-slate-100 flex items-center gap-2">
-            30yo Male • Rear-End Motorcycle Collision
-            <span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-semibold">Pain 7/10</span>
+            30yo Male • Rear-End Motorcycle Collision[cite: 1]
+            <span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 font-semibold">Pain 7/10[cite: 1]</span>
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">Pre-Hospital: C-Collar & Spinal Board Applied, 15L/min NRBM[cite: 1].</p>
         </div>
-        <div class="flex items-center gap-3 font-mono text-xs">
-          <span class="px-2.5 py-1 bg-slate-900 rounded border border-slate-800 text-emerald-400">HR: 110 bpm[cite: 1]</span>
-          <span class="px-2.5 py-1 bg-slate-900 rounded border border-slate-800 text-emerald-400">BP: 115/75[cite: 1]</span>
-          <span class="px-2.5 py-1 bg-slate-900 rounded border border-slate-800 text-cyan-400">SpO2: 98%[cite: 1]</span>
+        <div class="flex items-center gap-2.5 font-mono text-xs">
+          <span class="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800 text-emerald-400">HR: 110 bpm[cite: 1]</span>
+          <span class="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800 text-emerald-400">BP: 115/75[cite: 1]</span>
+          <span class="px-2.5 py-1 bg-slate-900 rounded-lg border border-slate-800 text-cyan-400">SpO2: 98%[cite: 1]</span>
         </div>
       </div>
 
       <!-- Checklist Section Header -->
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-list-check text-blue-400"></i> OSCE Assessment Marking Checklist
+          <i class="fa-solid fa-list-check text-blue-400"></i> Examiner Marking Checklist
         </h3>
-        <span class="text-xs text-slate-400">Mark items as candidate verbalizes/performs action</span>
+        <span class="text-xs text-slate-400">Mark items as participant performs/verbalizes actions</span>
       </div>
 
-      <!-- Checklist Form Container -->
-      <div id="checklist-container" class="space-y-3">
+      <!-- Checklist Items -->
+      <div id="checklist-container" class="space-y-2.5">
 
-        <!-- Item 1 -->
+        <!-- 1 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">&lt;C&gt; Catastrophic Hemorrhage Appraisal</span>
-              <span class="text-xs text-slate-400">Vocalizes need to look for obvious exsanguinating hemorrhage (Result: None)[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">&lt;C&gt; Catastrophic Hemorrhage Assessment</span>
+              <span class="text-xs text-slate-400">Vocalizes need to inspect for obvious exsanguinating hemorrhage (Result: None)[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 2 -->
+        <!-- 2 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
               <span class="text-xs font-bold text-slate-200 block">Airway Patency & Cervical Spine Immobilization</span>
-              <span class="text-xs text-slate-400">Assesses speech, inspects neck for wounds/deviation, ensures C-collar protection[cite: 1].</span>
+              <span class="text-xs text-slate-400">Assesses speech, checks neck for wounds/deviation, maintains C-collar protection[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 3 -->
+        <!-- 3 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Breathing & Chest Assessment</span>
-              <span class="text-xs text-slate-400">Inspects, palpates, percusses, auscultates chest bilaterally & verifies SpO2 (22 bpm, 99%)[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Breathing & Chest Wall Assessment</span>
+              <span class="text-xs text-slate-400">Inspects, palpates, percusses, auscultates chest bilaterally & verifies SpO2 (22/min, 99%)[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 4 -->
+        <!-- 4 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
               <span class="text-xs font-bold text-slate-200 block">Circulation & Perfusion Assessment</span>
-              <span class="text-xs text-slate-400">Checks skin color/temp, CRT (&lt;2s), pulse volume, abdomen, and pelvic exam (*NO SPRING)[cite: 1].</span>
+              <span class="text-xs text-slate-400">Checks skin color/temp, CRT (&lt;2s), pulses, abdomen, and pelvic exam (*DO NOT SPRING)[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 5 -->
+        <!-- 5 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
               <span class="text-xs font-bold text-slate-200 block">Large-Bore Vascular Access</span>
-              <span class="text-xs text-slate-400">Verbalizes insertion of 2x large bore IV cannulas (16G or larger) & warm crystalloids[cite: 1].</span>
+              <span class="text-xs text-slate-400">Verbalizes insertion of 2x large bore IV cannulas (16G or larger) & warm IV crystalloids[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 6 -->
+        <!-- 6 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Hemorrhage Control & IV Tranexamic Acid</span>
+              <span class="text-xs font-bold text-slate-200 block">Active Hemorrhage Control & IV Tranexamic Acid</span>
               <span class="text-xs text-slate-400">Applies direct pressure/dressing to 10x8cm wound & orders IV TXA[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 7 -->
+        <!-- 7 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Limb Splinting & Immobilization</span>
-              <span class="text-xs text-slate-400">Immobilizes and splints the open right tibia/fibula fracture appropriately[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Fracture Splinting & Limb Immobilization</span>
+              <span class="text-xs text-slate-400">Immobilizes and splints open right tibia/fibula fracture appropriately[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 8 -->
+        <!-- 8 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Disability & Neurological Function Assessment</span>
-              <span class="text-xs text-slate-400">Evaluates GCS (15/15), pupils (3mm equal/reactive), and gross focal neuro assessment[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Disability & Neurological Function Evaluation</span>
+              <span class="text-xs text-slate-400">Evaluates GCS (15/15), pupils (3mm equal/reactive), and gross focal neuro deficit[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 9 -->
+        <!-- 9 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Exposure & Hypothermia Prevention</span>
-              <span class="text-xs text-slate-400">Exposes fully (notes abrasions flank/torso), performs log roll, applies warm blanket[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Exposure & Environmental Control</span>
+              <span class="text-xs text-slate-400">Exposes fully (notes flank/torso abrasions), performs log roll, applies warm blanket[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 10 -->
+        <!-- 10 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
               <span class="text-xs font-bold text-slate-200 block">Primary Survey Adjuncts</span>
-              <span class="text-xs text-slate-400">Requests Bedside E-FAST, CXR, and Pelvic X-Ray (All Normal)[cite: 1].</span>
+              <span class="text-xs text-slate-400">Verbalizes Bedside E-FAST, CXR, and Pelvic X-Ray (All Normal)[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 11 -->
+        <!-- 11 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Secondary Survey Management</span>
-              <span class="text-xs text-slate-400">Orders analgesia, wound saline irrigation, early IV antibiotics, and IM anti-tetanus[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Secondary Survey Interventions</span>
+              <span class="text-xs text-slate-400">Orders IV analgesia, wound saline irrigation, early IV antibiotics, & IM anti-tetanus[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
         </label>
 
-        <!-- Item 12 -->
+        <!-- 12 -->
         <label class="glass-card p-3.5 rounded-xl flex items-start justify-between gap-3 cursor-pointer hover:border-slate-700 transition">
           <div class="flex items-start gap-3">
-            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0">
+            <input type="checkbox" data-points="1" onchange="calculateScore()" class="item-checkbox mt-1 h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-0 cursor-pointer">
             <div>
-              <span class="text-xs font-bold text-slate-200 block">Case Summary & Orthopedic Referral</span>
-              <span class="text-xs text-slate-400">Provides concise case summary & arranges early Orthopedic disposition[cite: 1].</span>
+              <span class="text-xs font-bold text-slate-200 block">Case Summary & Orthopedic Disposition</span>
+              <span class="text-xs text-slate-400">Provides concise case summary & arranges urgent Orthopedic team referral[cite: 1].</span>
             </div>
           </div>
           <span class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">1 PT</span>
@@ -290,21 +294,21 @@
       <!-- Live Summation Footer -->
       <div class="glass-card p-4 rounded-xl flex items-center justify-between border-t-2 border-t-blue-500 bg-slate-900/90">
         <div>
-          <span class="text-xs text-slate-400 uppercase font-semibold">Current Candidate Score</span>
-          <p class="text-xs text-slate-300">Passing Threshold: <span class="text-emerald-400 font-bold">9 / 12 Points (75%)</span></p>
+          <span class="text-xs text-slate-400 uppercase font-semibold">Total Accumulated Points</span>
+          <p class="text-xs text-slate-300">Passing Grade: <span class="text-emerald-400 font-bold">9 / 12 Points (75%)</span></p>
         </div>
         <div class="text-right">
           <span id="summation-total" class="text-2xl font-bold font-mono text-blue-400">0 / 12</span>
-          <span id="pass-fail-badge" class="block text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 mt-0.5">NOT EVALUATED</span>
+          <span id="pass-fail-badge" class="block text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 mt-0.5">UNEVALUATED</span>
         </div>
       </div>
 
     </div>
 
-    <!-- Right Panel: Diagnostics Modals & Moulage Viewers (4 Cols) -->
+    <!-- Right Panel: Patient Monitor & Moulage Images (4 Cols) -->
     <div class="lg:col-span-4 space-y-5">
 
-      <!-- Monitor Widget -->
+      <!-- Patient Monitor Widget -->
       <div class="glass-card p-4 rounded-xl border border-slate-800 bg-black/90">
         <div class="flex items-center justify-between text-xs mb-2">
           <span class="text-slate-400 font-mono"><i class="fa-solid fa-heart-pulse text-red-500 mr-1 animate-pulse"></i> PATIENT MONITOR</span>
@@ -317,13 +321,13 @@
         </div>
       </div>
 
-      <!-- Quick Diagnostic Image Viewers -->
+      <!-- Quick Diagnostic Scans Viewers -->
       <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3">
         <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-photo-film text-amber-400"></i> Scenario Diagnostic Scans
+          <i class="fa-solid fa-photo-film text-amber-400"></i> Moulage Clinical Scans
         </h3>
 
-        <!-- Wound Photo Card -->
+        <!-- Wound Image Preview -->
         <div class="relative group rounded-lg overflow-hidden border border-slate-800 cursor-pointer" onclick="openModal('modal-wound')">
           <img id="img-wound-preview" src="" alt="Open Leg Wound" class="w-full h-36 object-cover group-hover:scale-105 transition duration-300">
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 flex items-end p-2.5">
@@ -331,7 +335,7 @@
           </div>
         </div>
 
-        <!-- Diagnostic Grid Buttons -->
+        <!-- Scan Buttons -->
         <div class="grid grid-cols-2 gap-2 text-xs">
           <button onclick="openModal('modal-cxr')" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-slate-300 text-left flex items-center gap-2">
             <i class="fa-solid fa-lungs text-blue-400"></i> Chest X-Ray[cite: 1]
@@ -352,7 +356,6 @@
   </main>
 
   <!-- DIAGNOSTIC MODALS -->
-  <!-- CXR Modal -->
   <div id="modal-cxr" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card max-w-xl w-full p-4 rounded-2xl relative border border-slate-700">
       <button onclick="closeModal('modal-cxr')" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -360,11 +363,10 @@
       <div class="bg-black rounded-lg overflow-hidden flex justify-center max-h-[60vh]">
         <img id="img-cxr" src="" class="max-h-[55vh] object-contain">
       </div>
-      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Normal lung fields and chest contours[cite: 1].</p>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Normal lung fields and chest wall contours[cite: 1].</p>
     </div>
   </div>
 
-  <!-- Pelvis Modal -->
   <div id="modal-pelvis" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card max-w-xl w-full p-4 rounded-2xl relative border border-slate-700">
       <button onclick="closeModal('modal-pelvis')" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -376,7 +378,6 @@
     </div>
   </div>
 
-  <!-- EFAST Modal -->
   <div id="modal-efast" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
       <button onclick="closeModal('modal-efast')" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -387,11 +388,10 @@
         <img id="img-efast3" src="" class="w-full h-32 object-contain rounded border border-slate-800">
         <img id="img-efast4" src="" class="w-full h-32 object-contain rounded border border-slate-800">
       </div>
-      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Negative for intraperitoneal or pericardial free fluid[cite: 1].</p>
+      <p class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-check mr-1"></i> Negative for free fluid[cite: 1].</p>
     </div>
   </div>
 
-  <!-- Limb Modal -->
   <div id="modal-limb" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
       <button onclick="closeModal('modal-limb')" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -404,7 +404,6 @@
     </div>
   </div>
 
-  <!-- Wound Modal -->
   <div id="modal-wound" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full p-4 rounded-2xl relative border border-slate-700">
       <button onclick="closeModal('modal-wound')" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -418,19 +417,18 @@
   </div>
 
   <script>
-    // Embedded Base64 Images extracted directly from Scenario PDF
+    // Scenario Diagnostic Base64 Images
     const IMAGES = {
-      cxr: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAMQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iilfUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/wDYpRRfUQf7lG3+7Uv/AMVTdtLpYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
-      pelvis: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iifUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/wDYpRRfUQf7lG3+7Uv/AMVTdtLpYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
+      cxr: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAMQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iilfUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
+      pelvis: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iifUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
       efast1: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iii+/mHQKP9pvw/75o/4f/sf4aKfX4gDff3N2ooopbf5AIv3flooo/p/yE3t/L/n4S0UUVX9bfp/Ww0Hf/AGv/ALCik/h3UUunbf8AT+vmJvf+v5v8vw9A/4f/AP2A==",
-      efast2: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACUSDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3503/4qiiq9b/d2+f8AUh723/r4dPv+4bSfwUUUx/w9bf1+P4fIN38f1+vT0+nr/Khv8/NRRVfzbfp3A/h3UUUU1v1sC/4f0+/+twh/3f8Aedvx/CBD0+lC/8Avvf30//AGf50Uf8/d13sK/4/wBX/r/IP/idp3X231//2Q==",
+      efast2: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACUSDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3503/4qiiq9b/d2+f8AUh723/r4dPv+4bSfwUUUx/9b",
       efast3: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iii+/mHQKP9pvw/75o/4f/sf4aKfX4gDff3N2ooopbf5AIv3flooo/p/yE3t/L/n4S0UUVX9bfp/Ww0Hf/AGv/ALCik/h3UUunbf8AT+vmJvf+v5v8vw9A/4f/AP2A==",
       efast4: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAnACoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/pract/9k=",
       wound: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADxAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/8E+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q==",
       limb: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502/z/AOfm2pG/ufc/9C/+Iooo2D1/z6v1Gfxbqb/m/u0UVfQnqP/8E+X+63bf/vNRf9+/m/uf+/tFFFvXqMP4aa1FFC6/MHsR/8/3eiiipW/8AX/B/EroPoo/j3fx0U2HQO/8AwKm0UUR33E/m33Gff3f/ALf/AGqfR/3/APp5Xmpt2A3+83/x2msnyr/47/A3f8v+f50UVcdwlsf/2Q=="
     };
 
-    // Load images on startup
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('img-cxr').src = IMAGES.cxr;
       document.getElementById('img-pelvis').src = IMAGES.pelvis;
@@ -443,13 +441,94 @@
       document.getElementById('img-wound2').src = IMAGES.wound;
       document.getElementById('img-limb1').src = IMAGES.limb;
       document.getElementById('img-limb2').src = IMAGES.limb;
+
+      // Restore saved Sheet URL from LocalStorage if available
+      const savedSheetUrl = localStorage.getItem('tlsm_google_sheet_url');
+      if (savedSheetUrl) {
+        document.getElementById('sheet-url-input').value = savedSheetUrl;
+        fetchCandidatesFromSheet();
+      } else {
+        // Fallback default candidates if no Google Sheet is supplied yet
+        populateDefaultCandidates();
+      }
     });
 
     /* ========================================================
-       TIMER & SCREEN BLINKING LOGIC
-       - Total: 15 Minutes (900 seconds)
-       - At 7 min elapsed (8 min remaining / 480s): Flash Yellow 3x
-       - At 10 min elapsed (5 min remaining / 300s): Flash Red 3x
+       GOOGLE SHEET DIRECT CSV INTEGRATION
+       Reads Participant Names directly from Column A of Google Sheet
+       (Requires Sheet to be "Anyone with the link can view")
+    ======================================================== */
+    async function fetchCandidatesFromSheet() {
+      const input = document.getElementById('sheet-url-input').value.trim();
+      if (!input) {
+        alert("Please paste your Google Sheet URL or Sheet ID first!");
+        return;
+      }
+
+      // Extract Sheet ID from URL if full URL is pasted
+      let sheetId = input;
+      const match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (match && match[1]) {
+        sheetId = match[1];
+      }
+
+      // Save to localStorage
+      localStorage.setItem('tlsm_google_sheet_url', input);
+
+      // Google Sheet CSV Export Endpoint
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error("Sheet response not OK");
+        const csvText = await response.text();
+
+        // Parse CSV to get names from Column A
+        const rows = csvText.split('\n').map(r => r.split(',')[0].replace(/^"|"$/g, '').trim()).filter(Boolean);
+        
+        // Exclude common header names
+        const names = rows.filter(name => !['name', 'participant', 'candidate', 'student name', 'participants', 'candidates'].includes(name.toLowerCase()));
+
+        if (names.length === 0) {
+          alert("No participant names found in Column A. Please check your sheet!");
+          return;
+        }
+
+        // Populate Dropdown
+        const select = document.getElementById('candidate-select');
+        select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
+        names.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          opt.className = 'bg-slate-900';
+          select.appendChild(opt);
+        });
+
+        alert(`✅ Successfully loaded ${names.length} participants directly from Google Sheet!`);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Unable to load Google Sheet. Make sure the Google Sheet sharing permission is set to 'Anyone with the link can view'.");
+      }
+    }
+
+    function populateDefaultCandidates() {
+      const defaults = ["Dr. Ahmad Razak", "Dr. Siti Sarah", "Dr. Kenneth Wong", "Dr. Priya Nambiar"];
+      const select = document.getElementById('candidate-select');
+      select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
+      defaults.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        opt.className = 'bg-slate-900';
+        select.appendChild(opt);
+      });
+    }
+
+    /* ========================================================
+       15-MINUTE TIMER & SCREEN BLINKING LOGIC
+       - Elapsed 7 minutes (420s / 8 min left) -> Blinks Yellow 3x
+       - Elapsed 10 minutes (600s / 5 min left) -> Blinks Red 3x
     ======================================================== */
     let timerDuration = 15 * 60; // 900 seconds
     let secondsRemaining = timerDuration;
@@ -479,25 +558,25 @@
 
         const elapsedSeconds = timerDuration - secondsRemaining;
 
-        // 7th Minute Elapsed Alert (420 seconds elapsed / 480 seconds remaining)
+        // 7th Minute Elapsed Alert (420s elapsed / 480s remaining)
         if (elapsedSeconds >= 7 * 60 && !flashed7Min) {
           flashed7Min = true;
           triggerScreenBlink('yellow');
         }
 
-        // 10th Minute Elapsed Alert (600 seconds elapsed / 300 seconds remaining)
+        // 10th Minute Elapsed Alert (600s elapsed / 300s remaining)
         if (elapsedSeconds >= 10 * 60 && !flashed10Min) {
           flashed10Min = true;
           triggerScreenBlink('red');
         }
 
-        // Time Expired
+        // Timer Expired
         if (secondsRemaining <= 0) {
           clearInterval(timerInterval);
           isTimerRunning = false;
           secondsRemaining = 0;
           updateTimerDisplay();
-          alert("⏰ EXAM TIME EXPIRED! Please wrap up and submit candidate marks.");
+          alert("⏰ EXAM TIME EXPIRED! Please calculate total score and finalize candidate evaluation.");
         }
       }, 1000);
     }
@@ -510,6 +589,15 @@
       document.getElementById('timer-btn').className = 'ml-2 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-sans font-medium transition flex items-center gap-1';
     }
 
+    function resetTimer() {
+      pauseTimer();
+      secondsRemaining = timerDuration;
+      flashed7Min = false;
+      flashed10Min = false;
+      document.getElementById('timer-btn-text').innerText = 'Start';
+      updateTimerDisplay();
+    }
+
     function updateTimerDisplay() {
       const mins = Math.floor(secondsRemaining / 60);
       const secs = secondsRemaining % 60;
@@ -519,7 +607,6 @@
       display.innerText = formatted;
       document.getElementById('timer-status-tag').innerText = `TIME: ${formatted}`;
 
-      // Color coding timer text
       if (secondsRemaining <= 300) {
         display.className = 'text-lg font-bold text-red-400 animate-pulse';
       } else if (secondsRemaining <= 480) {
@@ -536,11 +623,11 @@
       body.classList.add(className);
       setTimeout(() => {
         body.classList.remove(className);
-      }, 2500); // 3 blinks duration
+      }, 2500); // Duration for 3 blinks
     }
 
     /* ========================================================
-       CHECKLIST SUMMATION & MARKING LOGIC
+       CHECKLIST SUMMATION & SCORE CALCULATION
     ======================================================== */
     function calculateScore() {
       const checkboxes = document.querySelectorAll('.item-checkbox');
@@ -558,10 +645,10 @@
 
       const badge = document.getElementById('pass-fail-badge');
       if (currentScore >= 9) {
-        badge.innerText = 'PASSING GRADE';
+        badge.innerText = 'PASSING GRADE (>=75%)';
         badge.className = 'block text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mt-0.5';
       } else {
-        badge.innerText = 'BELOW THRESHOLD';
+        badge.innerText = 'BELOW THRESHOLD (<75%)';
         badge.className = 'block text-[10px] font-bold px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 mt-0.5';
       }
 
@@ -569,82 +656,32 @@
     }
 
     /* ========================================================
-       GOOGLE SHEETS INTEGRATION
+       SUBMIT & EXPORT MARKS
     ======================================================== */
-
-    // Fetch Candidate List from Google Apps Script Web App
-    async function fetchCandidatesFromSheet() {
-      const scriptUrl = document.getElementById('script-url').value.trim();
-      if (!scriptUrl) {
-        alert("Please paste your Google Apps Script Web App URL in the top bar to fetch candidates.");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${scriptUrl}?action=getCandidates`);
-        const data = await response.json();
-        
-        if (data && data.candidates) {
-          const select = document.getElementById('candidate-select');
-          select.innerHTML = '<option value="" class="bg-slate-900 text-slate-300">-- Select Participant --</option>';
-          data.candidates.forEach(name => {
-            const opt = document.createElement('option');
-            opt.value = name;
-            opt.textContent = name;
-            opt.className = 'bg-slate-900';
-            select.appendChild(opt);
-          });
-          alert("Candidate list loaded successfully from Google Sheet!");
-        }
-      } catch (err) {
-        console.error("Error fetching candidates:", err);
-        alert("Unable to fetch candidates from Google Sheet. Using local participant list.");
-      }
-    }
-
-    // Submit Assessment Results to Google Sheet
-    async function submitToGoogleSheet() {
+    function submitMarks() {
       const candidate = document.getElementById('candidate-select').value;
       if (!candidate) {
-        alert("Please select a candidate before submitting marks!");
+        alert("Please select a participant name first!");
         return;
       }
 
-      const scriptUrl = document.getElementById('script-url').value.trim();
       const scoreData = calculateScore();
       const elapsedMins = Math.floor((timerDuration - secondsRemaining) / 60);
       const elapsedSecs = (timerDuration - secondsRemaining) % 60;
       const timeSpent = `${elapsedMins}m ${elapsedSecs}s`;
+      const percentage = Math.round((scoreData.score / scoreData.max) * 100);
 
-      const payload = {
-        candidateName: candidate,
-        score: scoreData.score,
-        totalPossible: scoreData.max,
-        percentage: Math.round((scoreData.score / scoreData.max) * 100) + '%',
-        timeSpent: timeSpent,
-        timestamp: new Date().toLocaleString()
-      };
+      const summaryText = `📋 ASSESSMENT SUBMISSION SUMMARY:\n\n` +
+                          `Participant: ${candidate}\n` +
+                          `Final Score: ${scoreData.score} / ${scoreData.max} (${percentage}%)\n` +
+                          `Status: ${scoreData.score >= 9 ? 'PASSED' : 'FAILED'}\n` +
+                          `Time Elapsed: ${timeSpent}\n` +
+                          `Date: ${new Date().toLocaleString()}`;
 
-      if (!scriptUrl) {
-        alert(`MARKS SUMMARIZED:\nCandidate: ${candidate}\nScore: ${payload.score}/${payload.totalPossible} (${payload.percentage})\nTime Elapsed: ${timeSpent}\n\nNote: To auto-save into Google Sheets, enter your Google Apps Script URL in the header.`);
-        return;
-      }
-
-      try {
-        await fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        alert(`✅ Score of ${payload.score}/${payload.totalPossible} for ${candidate} submitted to Google Sheet successfully!`);
-      } catch (err) {
-        console.error("Submission error:", err);
-        alert("Failed to send data to Google Sheet. Please check connection.");
-      }
+      alert(summaryText);
     }
 
-    // Modals
+    // Modal controls
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
