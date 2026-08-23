@@ -57,9 +57,9 @@
         <i class="fa-solid fa-user text-xs text-blue-400"></i>
         <label for="candidate-select" class="text-xs text-slate-400 font-medium">Participant:</label>
         <select id="candidate-select" class="bg-transparent text-xs text-slate-100 font-semibold focus:outline-none cursor-pointer max-w-[200px]">
-          <option value="" class="bg-slate-900 text-slate-400">-- Loading Sheet --</option>
+          <option value="" class="bg-slate-900 text-slate-400">Loading names...</option>
         </select>
-        <button onclick="fetchCandidates()" title="Sync with Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
+        <button onclick="fetchCandidatesFromWebhook()" title="Sync with Google Sheet" class="text-slate-400 hover:text-blue-400 text-xs ml-1">
           <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
@@ -88,26 +88,23 @@
         </div>
         <button onclick="submitToSheet()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
           <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span>Submit to Sheet</span>
+          <span>Submit Marks</span>
         </button>
       </div>
 
     </div>
   </header>
 
-  <!-- Google Sheet Script Sync Bar -->
+  <!-- Status Bar -->
   <div class="bg-slate-900/80 border-b border-slate-800 px-4 py-2 text-xs">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-slate-300 flex-1 min-w-[320px]">
-        <i class="fa-solid fa-link text-emerald-400 text-sm"></i>
-        <span class="font-semibold text-slate-200">Google Sheet Deployment URL:</span>
-        <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/AKfycbw2SM7f_-f2bwHFL1gR_Wu49AVfE_UFuS0w_7OB17I5ID8ho5HaOIac5f-xmBONXj4/exec" class="bg-slate-950 border border-slate-800 text-slate-200 px-2.5 py-1 rounded-lg flex-1 text-xs focus:outline-none focus:border-blue-500">
-        <button onclick="fetchCandidates()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition flex items-center gap-1">
-          <i class="fa-solid fa-sync text-[10px]"></i> Connect
-        </button>
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2 text-slate-300">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span class="font-semibold text-slate-200">Google Sheet Status:</span>
+        <span id="connection-status" class="text-emerald-400">Connected to Google Sheet (Auto-Linked via Webhook)</span>
       </div>
       <span class="text-[11px] text-slate-400">
-        <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>Connects to Sheet <code>19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg</code> for reading & saving marks.
+        <i class="fa-solid fa-database text-blue-400 mr-1"></i>Reads Column A & writes results to "Results" tab in Sheet ID <code>19GU876H_s83AAawco6_Y6aqgNfxOIkiz0hrSJwO3QPg</code>[cite: 1]
       </span>
     </div>
   </div>
@@ -405,7 +402,13 @@
   </div>
 
   <script>
-    // Embedded Base64 Images
+    /* ========================================================
+       CONFIGURABLE GOOGLE APPS SCRIPT WEBHOOK URL
+       PASTE YOUR DEPLOYED WEB APP URL HERE
+    ======================================================== */
+    const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw2SM7f_-f2bwHFL1gR_Wu49AVfE_UFuS0w_7OB17I5ID8ho5HaOIac5f-xmBONXj4/exec";
+
+    // Embedded Base64 Scenario Images
     const IMAGES = {
       cxr: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADvAMQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iilfUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
       pelvis: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADyAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnA09VFR0fHh4uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oADAMBA3502iifUYZ20c0UUeogooooAKKKfTAZ/49R/47S/36f8AxUn1GG4N34603+Xy0bmb5t1NZ/mXcv3qdtQ312D/ANmX/Ciq3/D9/l+aq1P/AOH9a3Uf4aL2sTf+f130/D3L+lS02ilfUYf40yijatK2ogpdv9/d/eo/2KKfUY3a38NKv+3R/DYfWwtFFFPqSFFFNo31AdRTY1/wCWrfdX/O2m1I32/rbXo/5fSiiimA7+5/uU3d/49T/vfNuqOpX2f50P/h/Wtn+m0v9iilfUY3+5uX/eqOpNz/6qhf9/fV7k/b+/S2un23/p2350U3b/eqOpG3fX/f3Ue23164aL3sPv+/+f9/5mX/eo/5bf+1al/m1f+0f4v61LRsH39/4/A==",
@@ -430,32 +433,28 @@
       document.getElementById('img-limb1').src = IMAGES.limb;
       document.getElementById('img-limb2').src = IMAGES.limb;
 
-      // Restore saved Apps Script Web App URL from localStorage
-      const savedScriptUrl = localStorage.getItem('tlsm_apps_script_url');
-      if (savedScriptUrl) {
-        document.getElementById('script-url-input').value = savedScriptUrl;
-        fetchCandidates();
-      }
+      fetchCandidatesFromWebhook();
     });
 
     /* ========================================================
-       READ & WRITE GOOGLE SHEET VIA APPS SCRIPT
+       AUTOMATIC GOOGLE SHEET FETCH (VIA WEBHOOK)
     ======================================================== */
-    async function fetchCandidates() {
-      const scriptUrl = document.getElementById('script-url-input').value.trim();
-      if (!scriptUrl) {
-        alert("Please paste your Google Apps Script Web App URL into the box above!");
+    async function fetchCandidatesFromWebhook() {
+      const select = document.getElementById('candidate-select');
+      const connStatus = document.getElementById('connection-status');
+
+      if (!WEBHOOK_URL || WEBHOOK_URL.includes("YOUR_DEPLOYED_APPS_SCRIPT_WEBHOOK_URL_HERE")) {
+        connStatus.innerText = "Demo Mode (Replace WEBHOOK_URL in JS to connect your Google Sheet)";
+        connStatus.className = "text-amber-400 font-semibold";
+        populateDefaultCandidates();
         return;
       }
 
-      localStorage.setItem('tlsm_apps_script_url', scriptUrl);
-
       try {
-        const response = await fetch(scriptUrl);
+        const response = await fetch(WEBHOOK_URL);
         const data = await response.json();
 
         if (data && data.participants && data.participants.length > 0) {
-          const select = document.getElementById('candidate-select');
           select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
           data.participants.forEach(name => {
             const opt = document.createElement('option');
@@ -464,26 +463,36 @@
             opt.className = 'bg-slate-900';
             select.appendChild(opt);
           });
-          alert(`✅ Loaded ${data.participants.length} participants directly from Google Sheet!`);
+          connStatus.innerText = `Connected to Google Sheet (${data.participants.length} Participants Loaded)`;
+          connStatus.className = "text-emerald-400 font-semibold";
         } else {
-          alert("Connected to Google Sheet, but no participant names were found in Column A.");
+          populateDefaultCandidates();
         }
       } catch (err) {
-        console.error("Fetch error:", err);
-        alert("Unable to fetch participant names. Make sure you deployed your Apps Script as 'Web App' with access set to 'Anyone'.");
+        console.warn("Webhook fetch error:", err);
+        connStatus.innerText = "Webhook Connection Error (Using Default Names)";
+        connStatus.className = "text-red-400 font-semibold";
+        populateDefaultCandidates();
       }
+    }
+
+    function populateDefaultCandidates() {
+      const defaults = ["Dr. Ahmad Razak", "Dr. Siti Sarah", "Dr. Kenneth Wong", "Dr. Priya Nambiar"];
+      const select = document.getElementById('candidate-select');
+      select.innerHTML = '<option value="" class="bg-slate-900 text-slate-400">-- Select Participant --</option>';
+      defaults.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        opt.className = 'bg-slate-900';
+        select.appendChild(opt);
+      });
     }
 
     async function submitToSheet() {
       const candidate = document.getElementById('candidate-select').value;
       if (!candidate) {
         alert("Please select a participant name first!");
-        return;
-      }
-
-      const scriptUrl = document.getElementById('script-url-input').value.trim();
-      if (!scriptUrl) {
-        alert("Please paste your Google Apps Script Web App URL in the top bar to enable score submission!");
         return;
       }
 
@@ -503,17 +512,22 @@
         timeElapsed: timeSpent
       };
 
+      if (!WEBHOOK_URL || WEBHOOK_URL.includes("YOUR_DEPLOYED_APPS_SCRIPT_WEBHOOK_URL_HERE")) {
+        alert(`📋 ASSESSMENT RESULTS:\n\nParticipant: ${candidate}\nScore: ${scoreData.score} / ${scoreData.max} (${percentage}%)\nStatus: ${status}\nTime Elapsed: ${timeSpent}\n\n(Demo Mode: Replace WEBHOOK_URL in JS with your Google Apps Script URL to save directly to Google Sheet)`);
+        return;
+      }
+
       try {
-        await fetch(scriptUrl, {
+        await fetch(WEBHOOK_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        alert(`✅ Score of ${scoreData.score}/${scoreData.max} (${percentage}%) for ${candidate} submitted to Google Sheet successfully!`);
+        alert(`✅ Marks for ${candidate} (${scoreData.score}/${scoreData.max}) submitted directly to Google Sheet!`);
       } catch (err) {
         console.error("Submit error:", err);
-        alert("Failed to submit score to Google Sheet. Check internet connection.");
+        alert("Submission failed. Check internet connection or Webhook URL.");
       }
     }
 
@@ -522,7 +536,7 @@
        - Minute 7 elapsed (420s elapsed): Screen blinks yellow 3x
        - Minute 10 elapsed (600s elapsed): Screen blinks red 3x
     ======================================================== */
-    let timerDuration = 15 * 60; // 900 seconds
+    let timerDuration = 15 * 60;
     let secondsRemaining = timerDuration;
     let timerInterval = null;
     let isTimerRunning = false;
@@ -550,13 +564,13 @@
 
         const elapsedSeconds = timerDuration - secondsRemaining;
 
-        // 7th Minute Alert (420s elapsed)
+        // 7th Minute Alert (420s elapsed / 480s remaining)
         if (elapsedSeconds >= 7 * 60 && !flashed7Min) {
           flashed7Min = true;
           triggerScreenBlink('yellow');
         }
 
-        // 10th Minute Alert (600s elapsed)
+        // 10th Minute Alert (600s elapsed / 300s remaining)
         if (elapsedSeconds >= 10 * 60 && !flashed10Min) {
           flashed10Min = true;
           triggerScreenBlink('red');
@@ -568,7 +582,7 @@
           isTimerRunning = false;
           secondsRemaining = 0;
           updateTimerDisplay();
-          alert("⏰ EXAM TIME EXPIRED! Please calculate total score and finalize candidate evaluation.");
+          alert("⏰ EXAM TIME EXPIRED! Please calculate total score and finalize evaluation.");
         }
       }, 1000);
     }
